@@ -20,16 +20,25 @@ body { font-family: -apple-system, sans-serif; background: #fafafa; display: fle
 .my-label { font-size: 13px; color: #888; }
 .my-val { font-size: 14px; font-weight: 500; color: #111; }
 .divider { border: none; border-top: 1px solid #f0f0f0; }
+.search-wrap { margin-bottom: 12px; }
+.search-row { display: flex; gap: 8px; }
+.search-input { flex: 1; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: #fff; color: #111; outline: none; }
+.search-input:focus { border-color: #aaa; }
+.search-btn { padding: 10px 16px; background: #111; color: #fff; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; white-space: nowrap; }
+.search-btn:hover { background: #333; }
+.search-result { margin-top: 10px; font-size: 13px; color: #e24b4a; min-height: 18px; }
 .notice { font-size: 12px; color: #aaa; text-align: center; line-height: 1.7; margin-bottom: 1rem; }
 .refresh-btn { display: block; width: 100%; font-size: 13px; color: #666; background: none; border: 1px solid #ddd; border-radius: 8px; padding: 10px; cursor: pointer; }
 .refresh-btn:hover { background: #f5f5f5; }
 .error { color: #e24b4a; font-size: 12px; text-align: center; padding: 1rem 0; }
+.section-label { font-size: 11px; color: #aaa; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; margin-top: 1.25rem; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <p class="store">혼술바 우연 을지로</p>
   <p class="title">실시간 웨이팅 현황</p>
+
   <div class="stat-grid">
     <div class="stat-card">
       <p class="stat-label">전체 대기</p>
@@ -42,35 +51,83 @@ body { font-family: -apple-system, sans-serif; background: #fafafa; display: fle
       <p class="stat-unit">팀 남음</p>
     </div>
   </div>
+
   <div class="my-card">
     <div class="my-row">
       <span class="my-label">접수 번호</span>
-      <span class="my-val" id="mynum">확인 중…</span>
+      <span class="my-val" id="mynum">—</span>
     </div>
     <hr class="divider">
     <div class="my-row">
       <span class="my-label">성함</span>
-      <span class="my-val" id="myname">확인 중…</span>
+      <span class="my-val" id="myname">—</span>
     </div>
     <hr class="divider">
     <div class="my-row">
       <span class="my-label">인원</span>
-      <span class="my-val" id="mypeople">확인 중…</span>
+      <span class="my-val" id="mypeople">—</span>
     </div>
   </div>
+
+  <p class="section-label">이름으로 순번 조회</p>
+  <div class="search-wrap">
+    <div class="search-row">
+      <input class="search-input" id="searchInput" type="text" placeholder="성함 입력 (예: 홍길동)">
+      <button class="search-btn" onclick="searchByName()">조회</button>
+    </div>
+    <p class="search-result" id="searchResult"></p>
+  </div>
+
   <p class="notice">30초마다 자동 업데이트 됩니다<br>입장 순서가 되면 연락드릴게요 :)</p>
   <button class="refresh-btn" onclick="loadData()">지금 새로고침</button>
   <div id="errmsg"></div>
 </div>
+
 <script>
 const SHEET_ID = '1NmPb6wxX0usqeP-gd7cFQPgHecLQsCYcA3i3wcU3uwc';
 const API_KEY = 'AIzaSyDNs6DjFlPRHukWl572r1pMZV72F6ZtODI';
 const RANGE = '시트1!A:G';
+let allRows = [];
 
 function getParam(key) {
   try { return new URLSearchParams(window.location.search).get(key) || ''; }
   catch(e) { return ''; }
 }
+
+function updateMyInfo(myName) {
+  if (!myName || allRows.length === 0) return;
+  const myIndex = allRows.findIndex(r => r[3] && r[3].trim() === myName.trim());
+  if (myIndex >= 0) {
+    const myRow = allRows[myIndex];
+    document.getElementById('mynum').textContent = (myIndex + 1) + '번';
+    document.getElementById('myname').textContent = myRow[3] || '—';
+    document.getElementById('mypeople').textContent = (myRow[5] || '—') + '명';
+    document.getElementById('ahead').textContent = myIndex;
+  }
+}
+
+function searchByName() {
+  const input = document.getElementById('searchInput').value.trim();
+  const result = document.getElementById('searchResult');
+  if (!input) { result.textContent = '이름을 입력해주세요.'; return; }
+  const myIndex = allRows.findIndex(r => r[3] && r[3].trim() === input);
+  if (myIndex >= 0) {
+    const myRow = allRows[myIndex];
+    result.style.color = '#111';
+    result.textContent = `${input}님은 현재 ${myIndex + 1}번째 대기 중이에요. (앞에 ${myIndex}팀 남음)`;
+    document.getElementById('mynum').textContent = (myIndex + 1) + '번';
+    document.getElementById('myname').textContent = myRow[3] || '—';
+    document.getElementById('mypeople').textContent = (myRow[5] || '—') + '명';
+    document.getElementById('ahead').textContent = myIndex;
+  } else {
+    result.style.color = '#e24b4a';
+    result.textContent = `"${input}" 이름으로 접수된 내역이 없어요.`;
+  }
+}
+
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') searchByName();
+});
 
 async function loadData() {
   document.getElementById('errmsg').innerHTML = '';
@@ -82,27 +139,15 @@ async function loadData() {
       document.getElementById('errmsg').innerHTML = `<p class="error">오류: ${data.error.message}</p>`;
       return;
     }
-    const rows = (data.values || []).slice(1).filter(r => r[3]);
-    document.getElementById('total').textContent = rows.length;
+    allRows = (data.values || []).slice(1).filter(r => r[3]);
+    document.getElementById('total').textContent = allRows.length;
     const myName = getParam('name');
-    let myIndex = -1;
-    if (myName) myIndex = rows.findIndex(r => r[3] && r[3].trim() === myName.trim());
-    if (myIndex >= 0) {
-      const myRow = rows[myIndex];
-      document.getElementById('mynum').textContent = (myIndex + 1) + '번';
-      document.getElementById('myname').textContent = myRow[3] || '—';
-      document.getElementById('mypeople').textContent = (myRow[5] || '—') + '명';
-      document.getElementById('ahead').textContent = myIndex;
-    } else {
-      document.getElementById('mynum').textContent = '—';
-      document.getElementById('myname').textContent = myName || '—';
-      document.getElementById('mypeople').textContent = '—';
-      document.getElementById('ahead').textContent = '—';
-    }
+    if (myName) updateMyInfo(myName);
   } catch(e) {
     document.getElementById('errmsg').innerHTML = '<p class="error">데이터를 불러오지 못했어요.</p>';
   }
 }
+
 loadData();
 setInterval(loadData, 30000);
 </script>

@@ -32,6 +32,16 @@ body { font-family: -apple-system, sans-serif; background: #fafafa; display: fle
 .refresh-btn:hover { background: #f5f5f5; }
 .error { color: #e24b4a; font-size: 12px; text-align: center; padding: 1rem 0; }
 .section-label { font-size: 11px; color: #aaa; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; margin-top: 1.25rem; }
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+.loading-dot {
+  display: inline-block;
+  animation: blink 1s ease-in-out infinite;
+}
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
 </style>
 </head>
 <body>
@@ -42,12 +52,12 @@ body { font-family: -apple-system, sans-serif; background: #fafafa; display: fle
   <div class="stat-grid">
     <div class="stat-card">
       <p class="stat-label">전체 대기</p>
-      <p class="stat-value" id="total">…</p>
+      <p class="stat-value" id="total"><span class="loading-dot">•</span><span class="loading-dot">•</span><span class="loading-dot">•</span></p>
       <p class="stat-unit">팀</p>
     </div>
     <div class="stat-card">
       <p class="stat-label">내 앞 대기</p>
-      <p class="stat-value" id="ahead">…</p>
+      <p class="stat-value" id="ahead"><span class="loading-dot">•</span><span class="loading-dot">•</span><span class="loading-dot">•</span></p>
       <p class="stat-unit">팀 남음</p>
     </div>
   </div>
@@ -94,6 +104,12 @@ function getParam(key) {
   catch(e) { return ''; }
 }
 
+function showLoading() {
+  const dot = '<span class="loading-dot">•</span><span class="loading-dot">•</span><span class="loading-dot">•</span>';
+  document.getElementById('total').innerHTML = dot;
+  document.getElementById('ahead').innerHTML = dot;
+}
+
 function updateMyInfo(myName) {
   if (!myName || allRows.length === 0) return;
   const myIndex = allRows.findIndex(r => r[3] && r[3].trim() === myName.trim());
@@ -130,6 +146,7 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
 });
 
 async function loadData() {
+  showLoading();
   document.getElementById('errmsg').innerHTML = '';
   try {
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(RANGE)}?key=${API_KEY}`;
@@ -143,6 +160,7 @@ async function loadData() {
     document.getElementById('total').textContent = allRows.length;
     const myName = getParam('name');
     if (myName) updateMyInfo(myName);
+    else document.getElementById('ahead').textContent = '—';
   } catch(e) {
     document.getElementById('errmsg').innerHTML = '<p class="error">데이터를 불러오지 못했어요.</p>';
   }
@@ -150,15 +168,12 @@ async function loadData() {
 
 const myName = getParam('name');
 if (myName) {
-  // URL에 이름 파라미터 있으면 (리디렉션된 경우) 5초 후 첫 로드
-  document.getElementById('total').textContent = '…';
-  document.getElementById('ahead').textContent = '…';
+  showLoading();
   setTimeout(() => {
     loadData();
     setInterval(loadData, 30000);
-  }, 5000);
+  }, 3000);
 } else {
-  // 직접 접속한 경우 바로 로드
   loadData();
   setInterval(loadData, 30000);
 }

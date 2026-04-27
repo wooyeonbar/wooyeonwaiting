@@ -148,8 +148,20 @@ async function loadData() {
   }
 }
 
-loadData();
-setInterval(loadData, 30000);
+const myName = getParam('name');
+if (myName) {
+  // URL에 이름 파라미터 있으면 (리디렉션된 경우) 5초 후 첫 로드
+  document.getElementById('total').textContent = '…';
+  document.getElementById('ahead').textContent = '…';
+  setTimeout(() => {
+    loadData();
+    setInterval(loadData, 30000);
+  }, 5000);
+} else {
+  // 직접 접속한 경우 바로 로드
+  loadData();
+  setInterval(loadData, 30000);
+}
 </script>
 </body>
 </html>

@@ -3,61 +3,231 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>웨이팅 현황</title>
+<title>우연 — 웨이팅</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, sans-serif; background: #fafafa; display: flex; justify-content: center; padding: 2rem 1rem; }
-.wrap { width: 100%; max-width: 420px; }
-.store { font-size: 11px; color: #999; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.4rem; }
-.title { font-size: 22px; font-weight: 500; color: #111; margin-bottom: 1.5rem; }
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-.stat-card { background: #f2f2f2; border-radius: 12px; padding: 1.25rem 1rem; }
-.stat-label { font-size: 12px; color: #888; margin-bottom: 6px; }
-.stat-value { font-size: 36px; font-weight: 500; color: #111; line-height: 1; }
-.stat-unit { font-size: 13px; color: #888; margin-top: 4px; }
-.my-card { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f7f6f4;
+  --surface: #ffffff;
+  --surface2: #f2f1ef;
+  --border: #e8e6e2;
+  --border2: #d8d6d2;
+  --text: #1a1916;
+  --text2: #6e6b66;
+  --text3: #a8a49e;
+  --accent: #1a1916;
+  --accent2: #3a3834;
+  --danger: #c0503e;
+  --success: #4a8c5c;
+}
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem 4rem;
+}
+
+.wrap { width: 100%; max-width: 400px; }
+
+/* Header */
+.header { padding: 2.2rem 0 1.6rem; }
+.header-sub { font-size: 11px; color: var(--text3); letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+.header-title { font-size: 24px; font-weight: 400; color: var(--text); }
+
+/* Status banner */
+.status-banner {
+  border-radius: 8px; padding: 0.8rem 1rem;
+  margin: 0 0 0.8rem;
+  display: flex; align-items: center; gap: 9px;
+  font-size: 13px;
+}
+.status-banner.open {
+  background: #eef6f1;
+  border: 1px solid #c8e0d0;
+  color: var(--success);
+}
+.status-banner.waiting {
+  background: #fdf8f2;
+  border: 1px solid #e8ddd0;
+  color: #8a6e4a;
+}
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%; flex-shrink: 0;
+}
+.status-banner.open .status-dot { background: var(--success); animation: pulse 2s infinite; }
+.status-banner.waiting .status-dot { background: #c8a870; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* Stats */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1rem;
+}
+.stat-label { font-size: 11px; color: var(--text3); margin-bottom: 8px; }
+.stat-value { font-size: 38px; font-weight: 300; color: var(--text); line-height: 1; }
+.stat-unit { font-size: 11px; color: var(--text3); margin-top: 5px; }
+
+/* My card */
+.my-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 8px;
+}
 .my-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; }
-.my-label { font-size: 13px; color: #888; }
-.my-val { font-size: 14px; font-weight: 500; color: #111; }
-.divider { border: none; border-top: 1px solid #f0f0f0; }
-.search-wrap { margin-bottom: 12px; }
+.my-label { font-size: 12px; color: var(--text3); }
+.my-val { font-size: 13px; font-weight: 400; color: var(--text); }
+.my-divider { border: none; border-top: 1px solid var(--border); }
+
+/* Loading dots */
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
+.dot { display: inline-block; animation: blink 1.2s ease-in-out infinite; color: var(--text3); font-size: 28px; line-height: 1; }
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Register button */
+.register-btn {
+  display: block; width: 100%; margin: 0.8rem 0 0;
+  padding: 13px; background: var(--accent); color: #fff;
+  border: none; border-radius: 8px;
+  font-size: 14px; font-weight: 400;
+  font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer; transition: background 0.15s;
+}
+.register-btn:hover { background: var(--accent2); }
+
+/* Search */
+.section-label { font-size: 10px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin: 1.2rem 0 0.6rem; }
 .search-row { display: flex; gap: 8px; }
-.search-input { flex: 1; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: #fff; color: #111; outline: none; }
-.search-input:focus { border-color: #aaa; }
-.search-btn { padding: 10px 16px; background: #111; color: #fff; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; white-space: nowrap; }
-.search-btn:hover { background: #333; }
-.search-result { margin-top: 10px; font-size: 13px; color: #e24b4a; min-height: 18px; }
-.notice { font-size: 12px; color: #aaa; text-align: center; line-height: 1.7; margin-bottom: 1rem; }
-.refresh-btn { display: block; width: 100%; font-size: 13px; color: #666; background: none; border: 1px solid #ddd; border-radius: 8px; padding: 10px; cursor: pointer; }
-.refresh-btn:hover { background: #f5f5f5; }
-.error { color: #e24b4a; font-size: 12px; text-align: center; padding: 1rem 0; }
-.section-label { font-size: 11px; color: #aaa; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; margin-top: 1.25rem; }
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.2; }
+.search-input {
+  flex: 1; padding: 10px 13px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; font-size: 14px; color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif; outline: none;
 }
-.loading-dot {
-  display: inline-block;
-  animation: blink 1s ease-in-out infinite;
+.search-input::placeholder { color: var(--text3); }
+.search-input:focus { border-color: var(--border2); }
+.search-btn {
+  padding: 10px 16px; background: var(--accent);
+  border: none; border-radius: 8px;
+  font-size: 13px; color: #fff;
+  font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+  transition: background 0.15s; white-space: nowrap;
 }
-.loading-dot:nth-child(2) { animation-delay: 0.2s; }
-.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+.search-btn:hover { background: var(--accent2); }
+.search-result { margin-top: 7px; font-size: 12px; min-height: 16px; color: var(--text2); }
+
+/* Notice panel */
+.notice-panel {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1rem; margin-top: 1.2rem;
+}
+.notice-title { font-size: 10px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.8rem; }
+.notice-item { display: flex; gap: 8px; font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 0.45rem; }
+.notice-item:last-child { margin-bottom: 0; }
+
+.refresh-row { display: flex; justify-content: center; margin-top: 1.4rem; }
+.refresh-btn {
+  font-size: 11px; color: var(--text3); background: none;
+  border: none; cursor: pointer; padding: 6px 12px; letter-spacing: 0.04em;
+}
+.refresh-btn:hover { color: var(--text2); }
+.errmsg { font-size: 12px; color: var(--danger); text-align: center; margin-top: 6px; min-height: 16px; }
+
+/* Form overlay */
+.form-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.35); backdrop-filter: blur(4px);
+  z-index: 100; align-items: flex-end; justify-content: center;
+}
+.form-overlay.active { display: flex; }
+.form-sheet {
+  background: var(--surface); border-radius: 18px 18px 0 0;
+  border: 1px solid var(--border);
+  width: 100%; max-width: 400px;
+  padding: 1.3rem 1.2rem 2.5rem;
+  max-height: 92vh; overflow-y: auto;
+  animation: slideUp 0.28s ease;
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.form-handle { width: 32px; height: 3px; background: var(--border2); border-radius: 2px; margin: 0 auto 1.4rem; }
+.form-title { font-size: 17px; font-weight: 400; margin-bottom: 0.3rem; }
+.form-sub { font-size: 12px; color: var(--text3); margin-bottom: 1.3rem; }
+
+.notice-box {
+  background: #fdf8f2; border: 1px solid #e8ddd0;
+  border-radius: 8px; padding: 0.9rem; margin-bottom: 1.2rem;
+}
+.notice-box-item { display: flex; gap: 8px; font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 0.35rem; }
+.notice-box-item:last-child { margin-bottom: 0; }
+
+.notice-agree { display: flex; align-items: center; gap: 8px; margin-bottom: 1.3rem; cursor: pointer; }
+.notice-agree input { accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer; }
+.notice-agree span { font-size: 12px; color: var(--text2); }
+
+.field { margin-bottom: 0.9rem; }
+.field-label { font-size: 10px; color: var(--text3); letter-spacing: 0.08em; margin-bottom: 5px; }
+.field-input {
+  width: 100%; padding: 10px 13px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; font-size: 14px; color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif; outline: none;
+}
+.field-input:focus { border-color: var(--border2); }
+
+.gender-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.gender-btn {
+  padding: 10px; background: var(--bg);
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 13px; color: var(--text2);
+  font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: all 0.15s;
+}
+.gender-btn.selected { background: var(--text); border-color: var(--text); color: #fff; }
+
+.submit-btn {
+  width: 100%; padding: 13px; margin-top: 0.4rem;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: 8px;
+  font-size: 14px; font-weight: 400;
+  font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer; transition: background 0.15s;
+}
+.submit-btn:hover { background: var(--accent2); }
+.submit-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.cancel-btn {
+  width: 100%; padding: 11px; margin-top: 6px;
+  background: none; color: var(--text3); border: none;
+  font-size: 12px; font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <p class="store">혼술바 우연 을지로</p>
-  <p class="title">실시간 웨이팅 현황</p>
+  <div class="header">
+    <p class="header-sub">혼술바 우연 을지로</p>
+    <h1 class="header-title">실시간 웨이팅 현황</h1>
+  </div>
+
+  <div id="statusBanner" class="status-banner waiting">
+    <div class="status-dot"></div>
+    <span id="statusText">현황 확인 중...</span>
+  </div>
 
   <div class="stat-grid">
     <div class="stat-card">
       <p class="stat-label">전체 대기</p>
-      <p class="stat-value" id="total"><span class="loading-dot">•</span><span class="loading-dot">•</span><span class="loading-dot">•</span></p>
+      <p class="stat-value" id="total"><span class="dot">•</span><span class="dot">•</span><span class="dot">•</span></p>
       <p class="stat-unit">팀</p>
     </div>
     <div class="stat-card">
       <p class="stat-label">내 앞 대기</p>
-      <p class="stat-value" id="ahead"><span class="loading-dot">•</span><span class="loading-dot">•</span><span class="loading-dot">•</span></p>
+      <p class="stat-value" id="ahead"><span class="dot">•</span><span class="dot">•</span><span class="dot">•</span></p>
       <p class="stat-unit">팀 남음</p>
     </div>
   </div>
@@ -67,58 +237,126 @@ body { font-family: -apple-system, sans-serif; background: #fafafa; display: fle
       <span class="my-label">접수 번호</span>
       <span class="my-val" id="mynum">—</span>
     </div>
-    <hr class="divider">
+    <hr class="my-divider">
     <div class="my-row">
       <span class="my-label">성함</span>
       <span class="my-val" id="myname">—</span>
     </div>
-    <hr class="divider">
+    <hr class="my-divider">
     <div class="my-row">
       <span class="my-label">인원</span>
       <span class="my-val" id="mypeople">—</span>
     </div>
   </div>
 
-  <p class="section-label">이름으로 순번 조회</p>
-  <div class="search-wrap">
-    <div class="search-row">
-      <input class="search-input" id="searchInput" type="text" placeholder="성함 입력 (예: 홍길동)">
-      <button class="search-btn" onclick="searchByName()">조회</button>
-    </div>
-    <p class="search-result" id="searchResult"></p>
+  <button class="register-btn" id="registerBtn" onclick="openForm()">웨이팅 등록하기</button>
+
+  <p class="section-label">순번 조회</p>
+  <div class="search-row">
+    <input class="search-input" id="searchInput" type="text" placeholder="성함 입력 (예: 홍길동)">
+    <button class="search-btn" onclick="searchByName()">조회</button>
+  </div>
+  <p class="search-result" id="searchResult"></p>
+
+  <div class="notice-panel">
+    <p class="notice-title">안내사항</p>
+    <div class="notice-item"><span>✨</span><span>88년생(39세) 이하 고객님만 입장 가능합니다.</span></div>
+    <div class="notice-item"><span>📞</span><span>연락 부재 시 다음 순번으로 바로 넘어갑니다.</span></div>
+    <div class="notice-item"><span>⏳</span><span>대기 인원이 많을 경우 순번 없이 마감될 수 있습니다.</span></div>
   </div>
 
-  <p class="notice">30초마다 자동 업데이트 됩니다<br>입장 순서가 되면 연락드릴게요 :)</p>
-  <button class="refresh-btn" onclick="loadData()">지금 새로고침</button>
-  <div id="errmsg"></div>
+  <div class="refresh-row">
+    <button class="refresh-btn" onclick="loadData()">↻ 새로고침</button>
+  </div>
+  <div class="errmsg" id="errmsg"></div>
+</div>
+
+<!-- Form overlay -->
+<div class="form-overlay" id="formOverlay">
+  <div class="form-sheet">
+    <div class="form-handle"></div>
+    <p class="form-title">웨이팅 등록</p>
+    <p class="form-sub">아래 정보를 입력해주세요</p>
+
+    <div class="notice-box">
+      <div class="notice-box-item"><span>✨</span><span>88년생(39세) 이하 고객님만 입장 가능합니다.</span></div>
+      <div class="notice-box-item"><span>📞</span><span>연락 부재 시 다음 순번으로 넘어갑니다. 전화 꼭 확인해주세요!</span></div>
+      <div class="notice-box-item"><span>⏳</span><span>대기 인원이 많을 경우 순번 없이 마감될 수 있습니다.</span></div>
+    </div>
+
+    <label class="notice-agree">
+      <input type="checkbox" id="agreeCheck" onchange="checkAgree()">
+      <span>안내사항을 확인했습니다</span>
+    </label>
+
+    <div class="field">
+      <p class="field-label">성함</p>
+      <input class="field-input" id="fName" type="text" placeholder="홍길동">
+    </div>
+    <div class="field">
+      <p class="field-label">성별</p>
+      <div class="gender-row">
+        <button class="gender-btn" id="gMale" onclick="selectGender('남성')">남성</button>
+        <button class="gender-btn" id="gFemale" onclick="selectGender('여성')">여성</button>
+      </div>
+    </div>
+    <div class="field">
+      <p class="field-label">인원</p>
+      <input class="field-input" id="fPeople" type="number" min="1" max="10" placeholder="2">
+    </div>
+    <div class="field">
+      <p class="field-label">연락처</p>
+      <input class="field-input" id="fPhone" type="tel" placeholder="010-0000-0000">
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitForm()" disabled>등록하기</button>
+    <button class="cancel-btn" onclick="closeForm()">취소</button>
+  </div>
 </div>
 
 <script>
 const SHEET_ID = '1NmPb6wxX0usqeP-gd7cFQPgHecLQsCYcA3i3wcU3uwc';
 const API_KEY = 'AIzaSyDNs6DjFlPRHukWl572r1pMZV72F6ZtODI';
 const RANGE = '시트1!A:G';
-let allRows = [];
+const GAS_URL = 'YOUR_GAS_URL';
 
-function getParam(key) {
-  try { return new URLSearchParams(window.location.search).get(key) || ''; }
+let allRows = [];
+let selectedGender = '';
+
+function getParam(k) {
+  try { return new URLSearchParams(window.location.search).get(k) || ''; }
   catch(e) { return ''; }
 }
 
 function showLoading() {
-  const dot = '<span class="loading-dot">•</span><span class="loading-dot">•</span><span class="loading-dot">•</span>';
-  document.getElementById('total').innerHTML = dot;
-  document.getElementById('ahead').innerHTML = dot;
+  const d = '<span class="dot">•</span><span class="dot">•</span><span class="dot">•</span>';
+  document.getElementById('total').innerHTML = d;
+  document.getElementById('ahead').innerHTML = d;
+}
+
+function updateStatus(total) {
+  const banner = document.getElementById('statusBanner');
+  const text = document.getElementById('statusText');
+  const btn = document.getElementById('registerBtn');
+  if (total === 0) {
+    banner.className = 'status-banner open';
+    text.textContent = '지금 바로 입장 가능합니다!';
+    btn.style.display = 'none';
+  } else {
+    banner.className = 'status-banner waiting';
+    text.textContent = '현재 ' + total + '팀 대기 중입니다';
+    btn.style.display = 'block';
+  }
 }
 
 function updateMyInfo(myName) {
-  if (!myName || allRows.length === 0) return;
-  const myIndex = allRows.findIndex(r => r[3] && r[3].trim() === myName.trim());
-  if (myIndex >= 0) {
-    const myRow = allRows[myIndex];
-    document.getElementById('mynum').textContent = (myIndex + 1) + '번';
-    document.getElementById('myname').textContent = myRow[3] || '—';
-    document.getElementById('mypeople').textContent = (myRow[5] || '—') + '명';
-    document.getElementById('ahead').textContent = myIndex;
+  if (!myName || !allRows.length) return;
+  const i = allRows.findIndex(r => r[3] && r[3].trim() === myName.trim());
+  if (i >= 0) {
+    document.getElementById('mynum').textContent = (i+1) + '번';
+    document.getElementById('myname').textContent = allRows[i][3] || '—';
+    document.getElementById('mypeople').textContent = (allRows[i][5] || '—') + '명';
+    document.getElementById('ahead').textContent = i;
   }
 }
 
@@ -126,57 +364,88 @@ function searchByName() {
   const input = document.getElementById('searchInput').value.trim();
   const result = document.getElementById('searchResult');
   if (!input) { result.textContent = '이름을 입력해주세요.'; return; }
-  const myIndex = allRows.findIndex(r => r[3] && r[3].trim() === input);
-  if (myIndex >= 0) {
-    const myRow = allRows[myIndex];
-    result.style.color = '#111';
-    result.textContent = `${input}님은 현재 ${myIndex + 1}번째 대기 중이에요. (앞에 ${myIndex}팀 남음)`;
-    document.getElementById('mynum').textContent = (myIndex + 1) + '번';
-    document.getElementById('myname').textContent = myRow[3] || '—';
-    document.getElementById('mypeople').textContent = (myRow[5] || '—') + '명';
-    document.getElementById('ahead').textContent = myIndex;
+  const i = allRows.findIndex(r => r[3] && r[3].trim() === input);
+  if (i >= 0) {
+    result.style.color = '#6e6b66';
+    result.textContent = input + '님 — ' + (i+1) + '번째 대기 중 (앞에 ' + i + '팀 남음)';
+    document.getElementById('mynum').textContent = (i+1) + '번';
+    document.getElementById('myname').textContent = allRows[i][3] || '—';
+    document.getElementById('mypeople').textContent = (allRows[i][5] || '—') + '명';
+    document.getElementById('ahead').textContent = i;
   } else {
-    result.style.color = '#e24b4a';
-    result.textContent = `"${input}" 이름으로 접수된 내역이 없어요.`;
+    result.style.color = '#c0503e';
+    result.textContent = '"' + input + '" 이름으로 접수된 내역이 없어요.';
   }
 }
 
-document.getElementById('searchInput').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') searchByName();
-});
+document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key==='Enter') searchByName(); });
 
 async function loadData() {
   showLoading();
-  document.getElementById('errmsg').innerHTML = '';
+  document.getElementById('errmsg').textContent = '';
   try {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(RANGE)}?key=${API_KEY}`;
-    const res = await fetch(url);
+    const res = await fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(RANGE) + '?key=' + API_KEY);
     const data = await res.json();
-    if (data.error) {
-      document.getElementById('errmsg').innerHTML = `<p class="error">오류: ${data.error.message}</p>`;
-      return;
-    }
+    if (data.error) { document.getElementById('errmsg').textContent = '오류: ' + data.error.message; return; }
     allRows = (data.values || []).slice(1).filter(r => r[3]);
     document.getElementById('total').textContent = allRows.length;
-    const myName = getParam('name');
-    if (myName) updateMyInfo(myName);
+    updateStatus(allRows.length);
+    const n = getParam('name');
+    if (n) updateMyInfo(n);
     else document.getElementById('ahead').textContent = '—';
   } catch(e) {
-    document.getElementById('errmsg').innerHTML = '<p class="error">데이터를 불러오지 못했어요.</p>';
+    document.getElementById('errmsg').textContent = '데이터를 불러오지 못했어요.';
   }
 }
 
-const myName = getParam('name');
-if (myName) {
-  showLoading();
-  setTimeout(() => {
-    loadData();
-    setInterval(loadData, 30000);
-  }, 3000);
-} else {
-  loadData();
-  setInterval(loadData, 30000);
+function openForm() { document.getElementById('formOverlay').classList.add('active'); document.body.style.overflow='hidden'; }
+function closeForm() { document.getElementById('formOverlay').classList.remove('active'); document.body.style.overflow=''; }
+
+function selectGender(g) {
+  selectedGender = g;
+  document.getElementById('gMale').classList.toggle('selected', g==='남성');
+  document.getElementById('gFemale').classList.toggle('selected', g==='여성');
+  checkAgree();
 }
+
+function checkAgree() {
+  const ok = document.getElementById('agreeCheck').checked
+    && document.getElementById('fName').value.trim()
+    && document.getElementById('fPhone').value.trim()
+    && document.getElementById('fPeople').value.trim()
+    && selectedGender;
+  document.getElementById('submitBtn').disabled = !ok;
+}
+
+['fName','fPhone','fPeople'].forEach(id => document.getElementById(id).addEventListener('input', checkAgree));
+
+async function submitForm() {
+  const btn = document.getElementById('submitBtn');
+  const name = document.getElementById('fName').value.trim();
+  btn.disabled = true; btn.textContent = '등록 중...';
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        name, gender: selectedGender,
+        people: document.getElementById('fPeople').value.trim(),
+        phone: document.getElementById('fPhone').value.trim()
+      })
+    });
+    closeForm();
+    setTimeout(() => { window.location.href = window.location.pathname + '?name=' + encodeURIComponent(name); }, 4000);
+  } catch(e) {
+    btn.disabled = false; btn.textContent = '등록하기';
+    alert('오류가 발생했어요. 다시 시도해주세요.');
+  }
+}
+
+document.getElementById('formOverlay').addEventListener('click', function(e) { if(e.target===this) closeForm(); });
+
+const n = getParam('name');
+if (n) { showLoading(); setTimeout(() => { loadData(); setInterval(loadData, 30000); }, 5000); }
+else { loadData(); setInterval(loadData, 30000); }
 </script>
 </body>
 </html>

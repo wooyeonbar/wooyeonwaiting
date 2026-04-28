@@ -279,6 +279,7 @@ body {
     <p class="form-sub">아래 정보를 입력해주세요</p>
 
     <div class="notice-box">
+      <div class="notice-box-item"><span>⏰</span><span>1시 반 마감입니다.</span></div>
       <div class="notice-box-item"><span>✨</span><span>88년생(39세) 이하 고객님만 입장 가능합니다.</span></div>
       <div class="notice-box-item"><span>📞</span><span>연락 부재 시 다음 순번으로 넘어갑니다. 전화 꼭 확인해주세요!</span></div>
       <div class="notice-box-item"><span>⏳</span><span>대기 인원이 많을 경우 순번 없이 마감될 수 있습니다.</span></div>
@@ -341,7 +342,6 @@ function updateStatus(total) {
   if (total === 0) {
     banner.className = 'status-banner open';
     text.textContent = '지금 바로 입장 가능합니다!';
-    btn.style.display = 'none';
   } else {
     banner.className = 'status-banner waiting';
     text.textContent = '현재 ' + total + '팀 대기 중입니다';

@@ -7,165 +7,85 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
 :root {
-  --bg: #f7f6f4;
-  --surface: #ffffff;
-  --surface2: #f2f1ef;
-  --border: #e8e6e2;
-  --border2: #d8d6d2;
-  --text: #1a1916;
-  --text2: #6e6b66;
-  --text3: #a8a49e;
-  --accent: #1a1916;
-  --accent2: #3a3834;
-  --danger: #c0503e;
-  --success: #4a8c5c;
+  --bg: #f7f6f4; --surface: #ffffff; --surface2: #f2f1ef;
+  --border: #e8e6e2; --border2: #d8d6d2;
+  --text: #1a1916; --text2: #6e6b66; --text3: #a8a49e;
+  --accent: #1a1916; --accent2: #3a3834;
+  --danger: #c0503e; --success: #4a8c5c;
 }
-
-body {
-  font-family: 'Noto Sans KR', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  padding: 0 1rem 4rem;
-}
-
+body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; justify-content: center; padding: 0 1rem 4rem; }
 .wrap { width: 100%; max-width: 400px; }
-
 .header { padding: 2.2rem 0 1.6rem; }
 .header-sub { font-size: 11px; color: var(--text3); letter-spacing: 0.06em; margin-bottom: 0.3rem; }
-.header-title { font-size: 24px; font-weight: 400; color: var(--text); }
-
-.status-banner {
-  border-radius: 8px; padding: 0.8rem 1rem;
-  margin: 0 0 0.8rem;
-  display: flex; align-items: center; gap: 9px;
-  font-size: 13px;
-}
+.header-title { font-size: 24px; font-weight: 400; }
+.status-banner { border-radius: 8px; padding: 0.8rem 1rem; margin: 0 0 0.8rem; display: flex; align-items: center; gap: 9px; font-size: 13px; }
 .status-banner.open { background: #eef6f1; border: 1px solid #c8e0d0; color: var(--success); }
 .status-banner.waiting { background: #fdf8f2; border: 1px solid #e8ddd0; color: #8a6e4a; }
+.status-banner.closed { background: #f9f0f0; border: 1px solid #e0c8c8; color: var(--danger); }
 .status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 .status-banner.open .status-dot { background: var(--success); animation: pulse 2s infinite; }
 .status-banner.waiting .status-dot { background: #c8a870; animation: pulse 2s infinite; }
+.status-banner.closed .status-dot { background: var(--danger); }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
 .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
 .stat-label { font-size: 11px; color: var(--text3); margin-bottom: 8px; }
 .stat-value { font-size: 38px; font-weight: 300; color: var(--text); line-height: 1; }
 .stat-unit { font-size: 11px; color: var(--text3); margin-top: 5px; }
-
 .my-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 8px; }
 .my-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; }
 .my-label { font-size: 12px; color: var(--text3); }
 .my-val { font-size: 13px; font-weight: 400; color: var(--text); }
 .my-divider { border: none; border-top: 1px solid var(--border); }
-
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
 .dot { display: inline-block; animation: blink 1.2s ease-in-out infinite; color: var(--text3); font-size: 28px; line-height: 1; }
 .dot:nth-child(2) { animation-delay: 0.2s; }
 .dot:nth-child(3) { animation-delay: 0.4s; }
-
-.register-btn {
-  display: block; width: 100%; margin: 0.8rem 0 0;
-  padding: 13px; background: var(--accent); color: #fff;
-  border: none; border-radius: 8px; font-size: 14px; font-weight: 400;
-  font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: background 0.15s;
-}
+.register-btn { display: block; width: 100%; margin: 0.8rem 0 0; padding: 13px; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 400; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: background 0.15s; }
 .register-btn:hover { background: var(--accent2); }
-
+.register-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.closed-msg { text-align: center; font-size: 13px; color: var(--danger); margin-top: 0.8rem; padding: 0.8rem; background: #f9f0f0; border-radius: 8px; border: 1px solid #e0c8c8; display: none; }
 .section-label { font-size: 10px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin: 1.2rem 0 0.6rem; }
 .search-row { display: flex; gap: 8px; }
-.search-input {
-  flex: 1; padding: 10px 13px;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 8px; font-size: 14px; color: var(--text);
-  font-family: 'Noto Sans KR', sans-serif; outline: none;
-}
+.search-input { flex: 1; padding: 10px 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 14px; color: var(--text); font-family: 'Noto Sans KR', sans-serif; outline: none; }
 .search-input::placeholder { color: var(--text3); }
 .search-input:focus { border-color: var(--border2); }
-.search-btn {
-  padding: 10px 16px; background: var(--accent); border: none; border-radius: 8px;
-  font-size: 13px; color: #fff; font-family: 'Noto Sans KR', sans-serif;
-  cursor: pointer; transition: background 0.15s; white-space: nowrap;
-}
-.search-btn:hover { background: var(--accent2); }
+.search-btn { padding: 10px 16px; background: var(--accent); border: none; border-radius: 8px; font-size: 13px; color: #fff; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; white-space: nowrap; }
 .search-result { margin-top: 7px; font-size: 12px; min-height: 16px; color: var(--text2); }
-
 .notice-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; margin-top: 1.2rem; }
 .notice-title { font-size: 10px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.8rem; }
 .notice-item { display: flex; gap: 8px; font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 0.45rem; }
 .notice-item:last-child { margin-bottom: 0; }
-
 .refresh-row { display: flex; justify-content: center; margin-top: 1.4rem; }
-.refresh-btn { font-size: 11px; color: var(--text3); background: none; border: none; cursor: pointer; padding: 6px 12px; letter-spacing: 0.04em; }
-.refresh-btn:hover { color: var(--text2); }
+.refresh-btn { font-size: 11px; color: var(--text3); background: none; border: none; cursor: pointer; padding: 6px 12px; }
 .errmsg { font-size: 12px; color: var(--danger); text-align: center; margin-top: 6px; min-height: 16px; }
-
-.form-overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.35); backdrop-filter: blur(4px);
-  z-index: 100; align-items: flex-end; justify-content: center;
-}
+.form-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); backdrop-filter: blur(4px); z-index: 100; align-items: flex-end; justify-content: center; }
 .form-overlay.active { display: flex; }
-.form-sheet {
-  background: var(--surface); border-radius: 18px 18px 0 0;
-  border: 1px solid var(--border); width: 100%; max-width: 400px;
-  padding: 1.3rem 1.2rem 2.5rem; max-height: 92vh; overflow-y: auto;
-  animation: slideUp 0.28s ease;
-}
+.form-sheet { background: var(--surface); border-radius: 18px 18px 0 0; border: 1px solid var(--border); width: 100%; max-width: 400px; padding: 1.3rem 1.2rem 2.5rem; max-height: 92vh; overflow-y: auto; animation: slideUp 0.28s ease; }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
 .form-handle { width: 32px; height: 3px; background: var(--border2); border-radius: 2px; margin: 0 auto 1.4rem; }
 .form-title { font-size: 17px; font-weight: 400; margin-bottom: 0.3rem; }
 .form-sub { font-size: 12px; color: var(--text3); margin-bottom: 1.3rem; }
-
 .notice-box { background: #fdf8f2; border: 1px solid #e8ddd0; border-radius: 8px; padding: 0.9rem; margin-bottom: 1.2rem; }
 .notice-box-item { display: flex; gap: 8px; font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 0.35rem; }
 .notice-box-item:last-child { margin-bottom: 0; }
-
 .notice-agree { display: flex; align-items: center; gap: 8px; margin-bottom: 1.3rem; cursor: pointer; }
 .notice-agree input { accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer; }
 .notice-agree span { font-size: 12px; color: var(--text2); }
-
 .field { margin-bottom: 0.9rem; }
 .field-label { font-size: 10px; color: var(--text3); letter-spacing: 0.08em; margin-bottom: 5px; }
-.field-input {
-  width: 100%; padding: 10px 13px;
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: 8px; font-size: 14px; color: var(--text);
-  font-family: 'Noto Sans KR', sans-serif; outline: none;
-}
+.field-input { width: 100%; padding: 10px 13px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; font-size: 14px; color: var(--text); font-family: 'Noto Sans KR', sans-serif; outline: none; }
 .field-input:focus { border-color: var(--border2); }
-.field-input.error { border-color: var(--danger); }
-
 .btn-group { display: grid; gap: 8px; }
-.btn-group.col3 { grid-template-columns: 1fr 1fr 1fr; }
+.btn-group.col2 { grid-template-columns: 1fr 1fr; }
 .btn-group.col4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
-.sel-btn {
-  padding: 10px 6px; background: var(--bg);
-  border: 1px solid var(--border); border-radius: 8px;
-  font-size: 13px; color: var(--text2);
-  font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: all 0.15s;
-  text-align: center;
-}
+.sel-btn { padding: 10px 6px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--text2); font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: all 0.15s; text-align: center; }
 .sel-btn.selected { background: var(--text); border-color: var(--text); color: #fff; }
-
-.submit-btn {
-  width: 100%; padding: 13px; margin-top: 0.4rem;
-  background: var(--accent); color: #fff; border: none; border-radius: 8px;
-  font-size: 14px; font-weight: 400; font-family: 'Noto Sans KR', sans-serif;
-  cursor: pointer; transition: background 0.15s;
-}
+.submit-btn { width: 100%; padding: 13px; margin-top: 0.4rem; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 400; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: background 0.15s; }
 .submit-btn:hover { background: var(--accent2); }
 .submit-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-.cancel-btn {
-  width: 100%; padding: 11px; margin-top: 6px;
-  background: none; color: var(--text3); border: none;
-  font-size: 12px; font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
-}
+.cancel-btn { width: 100%; padding: 11px; margin-top: 6px; background: none; color: var(--text3); border: none; font-size: 12px; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -194,23 +114,15 @@ body {
   </div>
 
   <div class="my-card">
-    <div class="my-row">
-      <span class="my-label">접수 번호</span>
-      <span class="my-val" id="mynum">—</span>
-    </div>
+    <div class="my-row"><span class="my-label">접수 번호</span><span class="my-val" id="mynum">—</span></div>
     <hr class="my-divider">
-    <div class="my-row">
-      <span class="my-label">성함</span>
-      <span class="my-val" id="myname">—</span>
-    </div>
+    <div class="my-row"><span class="my-label">성함</span><span class="my-val" id="myname">—</span></div>
     <hr class="my-divider">
-    <div class="my-row">
-      <span class="my-label">인원</span>
-      <span class="my-val" id="mypeople">—</span>
-    </div>
+    <div class="my-row"><span class="my-label">인원</span><span class="my-val" id="mypeople">—</span></div>
   </div>
 
   <button class="register-btn" id="registerBtn" onclick="openForm()">웨이팅 등록하기</button>
+  <div class="closed-msg" id="closedMsg">현재 웨이팅 등록이 마감되었습니다.</div>
 
   <p class="section-label">순번 조회</p>
   <div class="search-row">
@@ -221,51 +133,42 @@ body {
 
   <div class="notice-panel">
     <p class="notice-title">안내사항</p>
-    <div class="notice-box-item"><span>⏰</span><span>1시 반 마감입니다.</span></div>
     <div class="notice-item"><span>✨</span><span>88년생(39세) 이하 고객님만 입장 가능합니다.</span></div>
     <div class="notice-item"><span>📞</span><span>연락 부재 시 다음 순번으로 바로 넘어갑니다.</span></div>
     <div class="notice-item"><span>⏳</span><span>대기 인원이 많을 경우 순번 없이 마감될 수 있습니다.</span></div>
+    <div class="notice-item"><span>🕑</span><span>1시 30분 마감입니다.</span></div>
   </div>
 
-  <div class="refresh-row">
-    <button class="refresh-btn" onclick="loadData()">↻ 새로고침</button>
-  </div>
+  <div class="refresh-row"><button class="refresh-btn" onclick="loadData()">↻ 새로고침</button></div>
   <div class="errmsg" id="errmsg"></div>
 </div>
 
-<!-- Form overlay -->
 <div class="form-overlay" id="formOverlay">
   <div class="form-sheet">
     <div class="form-handle"></div>
     <p class="form-title">웨이팅 등록</p>
     <p class="form-sub">아래 정보를 입력해주세요</p>
-
     <div class="notice-box">
-      <div class="notice-box-item"><span>⏰</span><span>1시 반 마감입니다.</span></div>
       <div class="notice-box-item"><span>✨</span><span>88년생(39세) 이하 고객님만 입장 가능합니다.</span></div>
       <div class="notice-box-item"><span>📞</span><span>연락 부재 시 다음 순번으로 넘어갑니다. 전화 꼭 확인해주세요!</span></div>
       <div class="notice-box-item"><span>⏳</span><span>대기 인원이 많을 경우 순번 없이 마감될 수 있습니다.</span></div>
+      <div class="notice-box-item"><span>🕑</span><span>1시 30분 마감입니다.</span></div>
     </div>
-
     <label class="notice-agree">
       <input type="checkbox" id="agreeCheck" onchange="checkAgree()">
       <span>안내사항을 확인했습니다</span>
     </label>
-
     <div class="field">
       <p class="field-label">성함</p>
       <input class="field-input" id="fName" type="text" placeholder="홍길동">
     </div>
-
     <div class="field">
       <p class="field-label">성별</p>
-      <div class="btn-group col3">
+      <div class="btn-group col2">
         <button class="sel-btn" id="g0" onclick="selectGender('남성')">남성</button>
         <button class="sel-btn" id="g1" onclick="selectGender('여성')">여성</button>
-        <button class="sel-btn" id="g2" onclick="selectGender('혼성')">혼성</button>
       </div>
     </div>
-
     <div class="field">
       <p class="field-label">인원</p>
       <div class="btn-group col4">
@@ -275,12 +178,10 @@ body {
         <button class="sel-btn" id="p4" onclick="selectPeople('4')">4</button>
       </div>
     </div>
-
     <div class="field">
-      <p class="field-label">연락처(숫자만 입력)</p>
+      <p class="field-label">연락처 (숫자만 입력)</p>
       <input class="field-input" id="fPhone" type="tel" placeholder="010-0000-0000" maxlength="13">
     </div>
-
     <button class="submit-btn" id="submitBtn" onclick="submitForm()" disabled>등록하기</button>
     <button class="cancel-btn" onclick="closeForm()">취소</button>
   </div>
@@ -290,11 +191,13 @@ body {
 const SHEET_ID = '1NmPb6wxX0usqeP-gd7cFQPgHecLQsCYcA3i3wcU3uwc';
 const API_KEY = 'AIzaSyDNs6DjFlPRHukWl572r1pMZV72F6ZtODI';
 const RANGE = '시트1!A:G';
+const FULL_RANGE = '설정!A1';
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbzvIfxTPJVZUfjED-3XwLcHKRfbHouWLVFh9grynew8FdjUavr5nikX5wJMDdcYf1vH/exec';
 
 let allRows = [];
 let selectedGender = '';
 let selectedPeople = '';
+let isFullMode = false;
 
 function getParam(k) {
   try { return new URLSearchParams(window.location.search).get(k) || ''; }
@@ -310,12 +213,25 @@ function showLoading() {
 function updateStatus(total) {
   const banner = document.getElementById('statusBanner');
   const text = document.getElementById('statusText');
-  if (total === 0) {
+  const btn = document.getElementById('registerBtn');
+  const closedMsg = document.getElementById('closedMsg');
+
+  if (!isFullMode) {
+    // 만석 토글 꺼짐 = 웨이팅 불가
+    banner.className = 'status-banner closed';
+    text.textContent = '현재 웨이팅 등록이 마감되었습니다.';
+    btn.style.display = 'none';
+    closedMsg.style.display = 'block';
+  } else if (total === 0) {
     banner.className = 'status-banner open';
     text.textContent = '지금 바로 입장 가능합니다!';
+    btn.style.display = 'block';
+    closedMsg.style.display = 'none';
   } else {
     banner.className = 'status-banner waiting';
     text.textContent = '현재 ' + total + '팀 대기 중입니다';
+    btn.style.display = 'block';
+    closedMsg.style.display = 'none';
   }
 }
 
@@ -325,7 +241,7 @@ function updateMyInfo(myName) {
   if (i >= 0) {
     document.getElementById('mynum').textContent = (i+1) + '번';
     document.getElementById('myname').textContent = allRows[i][3] || '—';
-    document.getElementById('mypeople').textContent = (allRows[i][5] || '—') + '명';
+    document.getElementById('mypeople').textContent = (allRows[i][5]||'—') + '명';
     document.getElementById('ahead').textContent = i;
   }
 }
@@ -340,7 +256,7 @@ function searchByName() {
     result.textContent = input + '님 — ' + (i+1) + '번째 대기 중 (앞에 ' + i + '팀 남음)';
     document.getElementById('mynum').textContent = (i+1) + '번';
     document.getElementById('myname').textContent = allRows[i][3] || '—';
-    document.getElementById('mypeople').textContent = (allRows[i][5] || '—') + '명';
+    document.getElementById('mypeople').textContent = (allRows[i][5]||'—') + '명';
     document.getElementById('ahead').textContent = i;
   } else {
     result.style.color = '#c0503e';
@@ -354,10 +270,17 @@ async function loadData() {
   showLoading();
   document.getElementById('errmsg').textContent = '';
   try {
+    // 만석 상태 확인
+    const fullRes = await fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(FULL_RANGE) + '?key=' + API_KEY);
+    const fullData = await fullRes.json();
+    if (!fullData.error && fullData.values) {
+      isFullMode = fullData.values[0][0] === 'TRUE';
+    }
+
     const res = await fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(RANGE) + '?key=' + API_KEY);
     const data = await res.json();
     if (data.error) { document.getElementById('errmsg').textContent = '오류: ' + data.error.message; return; }
-    allRows = (data.values || []).slice(1).filter(r => r[3]);
+    allRows = (data.values||[]).slice(1).filter(r => r[3] && r[3].toString().trim() !== '');
     document.getElementById('total').textContent = allRows.length;
     updateStatus(allRows.length);
     const n = getParam('name');
@@ -373,31 +296,23 @@ function closeForm() { document.getElementById('formOverlay').classList.remove('
 
 function selectGender(g) {
   selectedGender = g;
-  ['남성','여성','혼성'].forEach((v,i) => {
-    document.getElementById('g'+i).classList.toggle('selected', v===g);
-  });
+  document.getElementById('g0').classList.toggle('selected', g==='남성');
+  document.getElementById('g1').classList.toggle('selected', g==='여성');
   checkAgree();
 }
 
 function selectPeople(p) {
   selectedPeople = p;
-  for(let i=1;i<=8;i++) {
-    document.getElementById('p'+i).classList.toggle('selected', String(i)===p);
-  }
+  for(let i=1;i<=4;i++) document.getElementById('p'+i).classList.toggle('selected', String(i)===p);
   checkAgree();
 }
 
-// 전화번호 자동 하이픈
-document.getElementById('fPhone').addEventListener('input', function(e) {
-  let val = this.value.replace(/\D/g, '');
-  if (val.length > 11) val = val.slice(0, 11);
-  if (val.length <= 3) {
-    this.value = val;
-  } else if (val.length <= 7) {
-    this.value = val.slice(0,3) + '-' + val.slice(3);
-  } else {
-    this.value = val.slice(0,3) + '-' + val.slice(3,7) + '-' + val.slice(7);
-  }
+document.getElementById('fPhone').addEventListener('input', function() {
+  let val = this.value.replace(/\D/g,'');
+  if (val.length > 11) val = val.slice(0,11);
+  if (val.length <= 3) this.value = val;
+  else if (val.length <= 7) this.value = val.slice(0,3) + '-' + val.slice(3);
+  else this.value = val.slice(0,3) + '-' + val.slice(3,7) + '-' + val.slice(7);
   checkAgree();
 });
 
@@ -406,8 +321,7 @@ function checkAgree() {
   const ok = document.getElementById('agreeCheck').checked
     && document.getElementById('fName').value.trim()
     && phone.length === 11
-    && selectedGender
-    && selectedPeople;
+    && selectedGender && selectedPeople;
   document.getElementById('submitBtn').disabled = !ok;
 }
 
@@ -422,17 +336,10 @@ async function submitForm() {
     await fetch(GAS_URL, {
       method: 'POST', mode: 'no-cors',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        name,
-        gender: selectedGender,
-        people: selectedPeople,
-        phone: document.getElementById('fPhone').value.trim()
-      })
+      body: JSON.stringify({ name, gender: selectedGender, people: selectedPeople, phone: document.getElementById('fPhone').value.trim() })
     });
     closeForm();
-    setTimeout(() => {
-      window.location.href = window.location.pathname + '?name=' + encodeURIComponent(name);
-    }, 4000);
+    setTimeout(() => { window.location.href = window.location.pathname + '?name=' + encodeURIComponent(name); }, 4000);
   } catch(e) {
     btn.disabled = false; btn.textContent = '등록하기';
     alert('오류가 발생했어요. 다시 시도해주세요.');

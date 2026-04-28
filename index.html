@@ -35,74 +35,48 @@ body {
 
 .wrap { width: 100%; max-width: 400px; }
 
-/* Header */
 .header { padding: 2.2rem 0 1.6rem; }
 .header-sub { font-size: 11px; color: var(--text3); letter-spacing: 0.06em; margin-bottom: 0.3rem; }
 .header-title { font-size: 24px; font-weight: 400; color: var(--text); }
 
-/* Status banner */
 .status-banner {
   border-radius: 8px; padding: 0.8rem 1rem;
   margin: 0 0 0.8rem;
   display: flex; align-items: center; gap: 9px;
   font-size: 13px;
 }
-.status-banner.open {
-  background: #eef6f1;
-  border: 1px solid #c8e0d0;
-  color: var(--success);
-}
-.status-banner.waiting {
-  background: #fdf8f2;
-  border: 1px solid #e8ddd0;
-  color: #8a6e4a;
-}
-.status-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%; flex-shrink: 0;
-}
+.status-banner.open { background: #eef6f1; border: 1px solid #c8e0d0; color: var(--success); }
+.status-banner.waiting { background: #fdf8f2; border: 1px solid #e8ddd0; color: #8a6e4a; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 .status-banner.open .status-dot { background: var(--success); animation: pulse 2s infinite; }
 .status-banner.waiting .status-dot { background: #c8a870; animation: pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-/* Stats */
 .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-.stat-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 10px; padding: 1rem;
-}
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
 .stat-label { font-size: 11px; color: var(--text3); margin-bottom: 8px; }
 .stat-value { font-size: 38px; font-weight: 300; color: var(--text); line-height: 1; }
 .stat-unit { font-size: 11px; color: var(--text3); margin-top: 5px; }
 
-/* My card */
-.my-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 8px;
-}
+.my-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 8px; }
 .my-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; }
 .my-label { font-size: 12px; color: var(--text3); }
 .my-val { font-size: 13px; font-weight: 400; color: var(--text); }
 .my-divider { border: none; border-top: 1px solid var(--border); }
 
-/* Loading dots */
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
 .dot { display: inline-block; animation: blink 1.2s ease-in-out infinite; color: var(--text3); font-size: 28px; line-height: 1; }
 .dot:nth-child(2) { animation-delay: 0.2s; }
 .dot:nth-child(3) { animation-delay: 0.4s; }
 
-/* Register button */
 .register-btn {
   display: block; width: 100%; margin: 0.8rem 0 0;
   padding: 13px; background: var(--accent); color: #fff;
-  border: none; border-radius: 8px;
-  font-size: 14px; font-weight: 400;
-  font-family: 'Noto Sans KR', sans-serif;
-  cursor: pointer; transition: background 0.15s;
+  border: none; border-radius: 8px; font-size: 14px; font-weight: 400;
+  font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: background 0.15s;
 }
 .register-btn:hover { background: var(--accent2); }
 
-/* Search */
 .section-label { font-size: 10px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin: 1.2rem 0 0.6rem; }
 .search-row { display: flex; gap: 8px; }
 .search-input {
@@ -114,33 +88,23 @@ body {
 .search-input::placeholder { color: var(--text3); }
 .search-input:focus { border-color: var(--border2); }
 .search-btn {
-  padding: 10px 16px; background: var(--accent);
-  border: none; border-radius: 8px;
-  font-size: 13px; color: #fff;
-  font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
-  transition: background 0.15s; white-space: nowrap;
+  padding: 10px 16px; background: var(--accent); border: none; border-radius: 8px;
+  font-size: 13px; color: #fff; font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer; transition: background 0.15s; white-space: nowrap;
 }
 .search-btn:hover { background: var(--accent2); }
 .search-result { margin-top: 7px; font-size: 12px; min-height: 16px; color: var(--text2); }
 
-/* Notice panel */
-.notice-panel {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 10px; padding: 1rem; margin-top: 1.2rem;
-}
+.notice-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; margin-top: 1.2rem; }
 .notice-title { font-size: 10px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.8rem; }
 .notice-item { display: flex; gap: 8px; font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 0.45rem; }
 .notice-item:last-child { margin-bottom: 0; }
 
 .refresh-row { display: flex; justify-content: center; margin-top: 1.4rem; }
-.refresh-btn {
-  font-size: 11px; color: var(--text3); background: none;
-  border: none; cursor: pointer; padding: 6px 12px; letter-spacing: 0.04em;
-}
+.refresh-btn { font-size: 11px; color: var(--text3); background: none; border: none; cursor: pointer; padding: 6px 12px; letter-spacing: 0.04em; }
 .refresh-btn:hover { color: var(--text2); }
 .errmsg { font-size: 12px; color: var(--danger); text-align: center; margin-top: 6px; min-height: 16px; }
 
-/* Form overlay */
 .form-overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,0.35); backdrop-filter: blur(4px);
@@ -149,10 +113,8 @@ body {
 .form-overlay.active { display: flex; }
 .form-sheet {
   background: var(--surface); border-radius: 18px 18px 0 0;
-  border: 1px solid var(--border);
-  width: 100%; max-width: 400px;
-  padding: 1.3rem 1.2rem 2.5rem;
-  max-height: 92vh; overflow-y: auto;
+  border: 1px solid var(--border); width: 100%; max-width: 400px;
+  padding: 1.3rem 1.2rem 2.5rem; max-height: 92vh; overflow-y: auto;
   animation: slideUp 0.28s ease;
 }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
@@ -160,10 +122,7 @@ body {
 .form-title { font-size: 17px; font-weight: 400; margin-bottom: 0.3rem; }
 .form-sub { font-size: 12px; color: var(--text3); margin-bottom: 1.3rem; }
 
-.notice-box {
-  background: #fdf8f2; border: 1px solid #e8ddd0;
-  border-radius: 8px; padding: 0.9rem; margin-bottom: 1.2rem;
-}
+.notice-box { background: #fdf8f2; border: 1px solid #e8ddd0; border-radius: 8px; padding: 0.9rem; margin-bottom: 1.2rem; }
 .notice-box-item { display: flex; gap: 8px; font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 0.35rem; }
 .notice-box-item:last-child { margin-bottom: 0; }
 
@@ -180,22 +139,24 @@ body {
   font-family: 'Noto Sans KR', sans-serif; outline: none;
 }
 .field-input:focus { border-color: var(--border2); }
+.field-input.error { border-color: var(--danger); }
 
-.gender-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.gender-btn {
-  padding: 10px; background: var(--bg);
+.btn-group { display: grid; gap: 8px; }
+.btn-group.col3 { grid-template-columns: 1fr 1fr 1fr; }
+.btn-group.col4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.sel-btn {
+  padding: 10px 6px; background: var(--bg);
   border: 1px solid var(--border); border-radius: 8px;
   font-size: 13px; color: var(--text2);
   font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: all 0.15s;
+  text-align: center;
 }
-.gender-btn.selected { background: var(--text); border-color: var(--text); color: #fff; }
+.sel-btn.selected { background: var(--text); border-color: var(--text); color: #fff; }
 
 .submit-btn {
   width: 100%; padding: 13px; margin-top: 0.4rem;
-  background: var(--accent); color: #fff;
-  border: none; border-radius: 8px;
-  font-size: 14px; font-weight: 400;
-  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--accent); color: #fff; border: none; border-radius: 8px;
+  font-size: 14px; font-weight: 400; font-family: 'Noto Sans KR', sans-serif;
   cursor: pointer; transition: background 0.15s;
 }
 .submit-btn:hover { background: var(--accent2); }
@@ -260,7 +221,6 @@ body {
 
   <div class="notice-panel">
     <p class="notice-title">안내사항</p>
-    <div class="notice-box-item"><span>⏰</span><span>1시 반 마감입니다.</span></div>
     <div class="notice-item"><span>✨</span><span>88년생(39세) 이하 고객님만 입장 가능합니다.</span></div>
     <div class="notice-item"><span>📞</span><span>연락 부재 시 다음 순번으로 바로 넘어갑니다.</span></div>
     <div class="notice-item"><span>⏳</span><span>대기 인원이 많을 경우 순번 없이 마감될 수 있습니다.</span></div>
@@ -280,7 +240,6 @@ body {
     <p class="form-sub">아래 정보를 입력해주세요</p>
 
     <div class="notice-box">
-      <div class="notice-box-item"><span>⏰</span><span>1시 반 마감입니다.</span></div>
       <div class="notice-box-item"><span>✨</span><span>88년생(39세) 이하 고객님만 입장 가능합니다.</span></div>
       <div class="notice-box-item"><span>📞</span><span>연락 부재 시 다음 순번으로 넘어갑니다. 전화 꼭 확인해주세요!</span></div>
       <div class="notice-box-item"><span>⏳</span><span>대기 인원이 많을 경우 순번 없이 마감될 수 있습니다.</span></div>
@@ -295,20 +254,35 @@ body {
       <p class="field-label">성함</p>
       <input class="field-input" id="fName" type="text" placeholder="홍길동">
     </div>
+
     <div class="field">
       <p class="field-label">성별</p>
-      <div class="gender-row">
-        <button class="gender-btn" id="gMale" onclick="selectGender('남성')">남성</button>
-        <button class="gender-btn" id="gFemale" onclick="selectGender('여성')">여성</button>
+      <div class="btn-group col3">
+        <button class="sel-btn" id="g0" onclick="selectGender('남성')">남성</button>
+        <button class="sel-btn" id="g1" onclick="selectGender('여성')">여성</button>
+        <button class="sel-btn" id="g2" onclick="selectGender('혼성')">혼성</button>
       </div>
     </div>
+
     <div class="field">
       <p class="field-label">인원</p>
-      <input class="field-input" id="fPeople" type="number" min="1" max="10" placeholder="2">
+      <div class="btn-group col4">
+        <button class="sel-btn" id="p1" onclick="selectPeople('1')">1</button>
+        <button class="sel-btn" id="p2" onclick="selectPeople('2')">2</button>
+        <button class="sel-btn" id="p3" onclick="selectPeople('3')">3</button>
+        <button class="sel-btn" id="p4" onclick="selectPeople('4')">4</button>
+      </div>
+      <div class="btn-group col4" style="margin-top:8px">
+        <button class="sel-btn" id="p5" onclick="selectPeople('5')">5</button>
+        <button class="sel-btn" id="p6" onclick="selectPeople('6')">6</button>
+        <button class="sel-btn" id="p7" onclick="selectPeople('7')">7</button>
+        <button class="sel-btn" id="p8" onclick="selectPeople('8')">8</button>
+      </div>
     </div>
+
     <div class="field">
       <p class="field-label">연락처</p>
-      <input class="field-input" id="fPhone" type="tel" placeholder="010-0000-0000">
+      <input class="field-input" id="fPhone" type="tel" placeholder="010-0000-0000" maxlength="13">
     </div>
 
     <button class="submit-btn" id="submitBtn" onclick="submitForm()" disabled>등록하기</button>
@@ -324,6 +298,7 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbzvIfxTPJVZUfjED-3XwLcH
 
 let allRows = [];
 let selectedGender = '';
+let selectedPeople = '';
 
 function getParam(k) {
   try { return new URLSearchParams(window.location.search).get(k) || ''; }
@@ -339,14 +314,12 @@ function showLoading() {
 function updateStatus(total) {
   const banner = document.getElementById('statusBanner');
   const text = document.getElementById('statusText');
-  const btn = document.getElementById('registerBtn');
   if (total === 0) {
     banner.className = 'status-banner open';
     text.textContent = '지금 바로 입장 가능합니다!';
   } else {
     banner.className = 'status-banner waiting';
     text.textContent = '현재 ' + total + '팀 대기 중입니다';
-    btn.style.display = 'block';
   }
 }
 
@@ -404,21 +377,46 @@ function closeForm() { document.getElementById('formOverlay').classList.remove('
 
 function selectGender(g) {
   selectedGender = g;
-  document.getElementById('gMale').classList.toggle('selected', g==='남성');
-  document.getElementById('gFemale').classList.toggle('selected', g==='여성');
+  ['남성','여성','혼성'].forEach((v,i) => {
+    document.getElementById('g'+i).classList.toggle('selected', v===g);
+  });
   checkAgree();
 }
 
+function selectPeople(p) {
+  selectedPeople = p;
+  for(let i=1;i<=8;i++) {
+    document.getElementById('p'+i).classList.toggle('selected', String(i)===p);
+  }
+  checkAgree();
+}
+
+// 전화번호 자동 하이픈
+document.getElementById('fPhone').addEventListener('input', function(e) {
+  let val = this.value.replace(/\D/g, '');
+  if (val.length > 11) val = val.slice(0, 11);
+  if (val.length <= 3) {
+    this.value = val;
+  } else if (val.length <= 7) {
+    this.value = val.slice(0,3) + '-' + val.slice(3);
+  } else {
+    this.value = val.slice(0,3) + '-' + val.slice(3,7) + '-' + val.slice(7);
+  }
+  checkAgree();
+});
+
 function checkAgree() {
+  const phone = document.getElementById('fPhone').value.replace(/\D/g,'');
   const ok = document.getElementById('agreeCheck').checked
     && document.getElementById('fName').value.trim()
-    && document.getElementById('fPhone').value.trim()
-    && document.getElementById('fPeople').value.trim()
-    && selectedGender;
+    && phone.length === 11
+    && selectedGender
+    && selectedPeople;
   document.getElementById('submitBtn').disabled = !ok;
 }
 
-['fName','fPhone','fPeople'].forEach(id => document.getElementById(id).addEventListener('input', checkAgree));
+document.getElementById('fName').addEventListener('input', checkAgree);
+document.getElementById('agreeCheck').addEventListener('change', checkAgree);
 
 async function submitForm() {
   const btn = document.getElementById('submitBtn');
@@ -429,13 +427,16 @@ async function submitForm() {
       method: 'POST', mode: 'no-cors',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
-        name, gender: selectedGender,
-        people: document.getElementById('fPeople').value.trim(),
+        name,
+        gender: selectedGender,
+        people: selectedPeople,
         phone: document.getElementById('fPhone').value.trim()
       })
     });
     closeForm();
-    setTimeout(() => { window.location.href = window.location.pathname + '?name=' + encodeURIComponent(name); }, 4000);
+    setTimeout(() => {
+      window.location.href = window.location.pathname + '?name=' + encodeURIComponent(name);
+    }, 4000);
   } catch(e) {
     btn.disabled = false; btn.textContent = '등록하기';
     alert('오류가 발생했어요. 다시 시도해주세요.');

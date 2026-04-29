@@ -105,7 +105,9 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 .action-btn.call { background: #eef6f1; border-color: #c8e0d0; color: var(--success); }
 .action-btn.enter { background: var(--accent); border-color: var(--accent); color: #fff; }
 .action-btn.coming { background: #888; border-color: #888; color: #fff; }
-.waiting-item.coming-state { background: #f0f0f0; opacity: 0.7; }
+.action-btn.confirm-o { background: var(--success); border-color: var(--success); color: #fff; font-weight: 600; }
+.action-btn.confirm-x { background: var(--danger); border-color: var(--danger); color: #fff; font-weight: 600; }
+.waiting-item.coming-state { background: #f0f0f0; }
 
 .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 .stat-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1rem; }
@@ -380,34 +382,43 @@ function sendSMS(rawIdx) {
   }
 }
 
-async function enterGuest(rawIdx) {
-  const iscoming = comingSet.includes(rawIdx);
-  if (iscoming) {
-    // 이미 오는 중 → 입장완료 확인
-    if (!confirm('입장 완료 처리하시겠습니까?')) return;
-    const row = rawRows[rawIdx];
-    if (!row) return;
-    try {
-      await fetch(GAS_URL, {
-        method: 'POST', mode: 'no-cors',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ type: 'delete', name: row[3], phone: row[6] })
-      });
-    } catch(e) {}
-    comingSet = comingSet.filter(i => i !== rawIdx);
-    starred = starred.filter(i => i !== rawIdx);
-    hearted = hearted.filter(i => i !== rawIdx);
-    localStorage.setItem('comingSet', JSON.stringify(comingSet));
-    localStorage.setItem('starredOrdered', JSON.stringify(starred));
-    localStorage.setItem('hearted', JSON.stringify(hearted));
-    await loadData();
-  } else {
-    // 처음 누름 → 오는 중으로 변경
-    comingSet.push(rawIdx);
-    localStorage.setItem('comingSet', JSON.stringify(comingSet));
-    renderStarred();
-    renderList();
-  }
+async function confirmO(rawIdx) {
+  // O 버튼 → 오는 중 상태로
+  comingSet.push(rawIdx);
+  localStorage.setItem('comingSet', JSON.stringify(comingSet));
+  renderStarred();
+  renderList();
+}
+
+async function confirmX(rawIdx) {
+  // X 버튼 → 바로 삭제
+  if (!confirm('삭제하시겠습니까?')) return;
+  await deleteGuest(rawIdx);
+}
+
+async function confirmComing(rawIdx) {
+  // 오는 중 다시 누름 → 입장 처리
+  if (!confirm('입장 처리 하겠습니까?')) return;
+  await deleteGuest(rawIdx);
+}
+
+async function deleteGuest(rawIdx) {
+  const row = rawRows[rawIdx];
+  if (!row) return;
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ type: 'delete', name: row[3], phone: row[6] })
+    });
+  } catch(e) {}
+  comingSet = comingSet.filter(i => i !== rawIdx);
+  starred = starred.filter(i => i !== rawIdx);
+  hearted = hearted.filter(i => i !== rawIdx);
+  localStorage.setItem('comingSet', JSON.stringify(comingSet));
+  localStorage.setItem('starredOrdered', JSON.stringify(starred));
+  localStorage.setItem('hearted', JSON.stringify(hearted));
+  await loadData();
 }
 
 function getSeatBadge(seat) {
@@ -418,13 +429,20 @@ function getSeatBadge(seat) {
 
 function getActionBtns(rawIdx, phone) {
   const isComing = comingSet.includes(rawIdx);
-  const enterClass = isComing ? 'coming' : 'enter';
-  const enterText = isComing ? '오는 중' : '입장';
-  return `<div class="action-btns">
-    <button class="action-btn" onclick="sendSMS(${rawIdx})">문자</button>
-    <button class="action-btn call" onclick="callGuest('${phone}')">전화</button>
-    <button class="action-btn ${enterClass}" onclick="enterGuest(${rawIdx})">${enterText}</button>
-  </div>`;
+  if (isComing) {
+    return `<div class="action-btns">
+      <button class="action-btn" onclick="sendSMS(${rawIdx})">문자</button>
+      <button class="action-btn call" onclick="callGuest('${phone}')">전화</button>
+      <button class="action-btn coming" onclick="confirmComing(${rawIdx})">오는 중</button>
+    </div>`;
+  } else {
+    return `<div class="action-btns">
+      <button class="action-btn" onclick="sendSMS(${rawIdx})">문자</button>
+      <button class="action-btn call" onclick="callGuest('${phone}')">전화</button>
+      <button class="action-btn confirm-o" onclick="confirmO(${rawIdx})">O</button>
+      <button class="action-btn confirm-x" onclick="confirmX(${rawIdx})">X</button>
+    </div>`;
+  }
 }
 
 function getTimeStr(row) {

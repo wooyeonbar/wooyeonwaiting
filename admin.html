@@ -291,19 +291,24 @@ function doLogout() {
 }
 
 async function initAdmin() {
-  requestNotificationPermission();
+  // 구글시트에서 설정값 전체 동기화
+  try {
+    const r = await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('설정!A1:A6')+'?key='+API_KEY);
+    const d = await r.json();
+    if (!d.error && d.values) {
+      isFull = d.values[0] && d.values[0][0] === 'TRUE';
+      const tM = parseInt(d.values[2] && d.values[2][0]) || 0;
+      const tF = parseInt(d.values[3] && d.values[3][0]) || 0;
+      const bM = parseInt(d.values[4] && d.values[4][0]) || 0;
+      const bF = parseInt(d.values[5] && d.values[5][0]) || 0;
+      seats = { tM, tF, bM, bF };
+      localStorage.setItem('seats', JSON.stringify(seats));
+    }
+  } catch(e) {}
   ['tM','tF','bM','bF'].forEach(k => { document.getElementById(k).textContent = seats[k] || 0; });
   updateSeatUI('t', TABLE_MAX);
   updateSeatUI('b', BAR_MAX);
-  // 구글시트에서 현재 만석 상태 읽어오기
-  try {
-    const r = await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('설정!A1')+'?key='+API_KEY);
-    const d = await r.json();
-    if (!d.error && d.values) {
-      isFull = d.values[0][0] === 'TRUE';
-      updateOpStatusUI();
-    }
-  } catch(e) {}
+  updateOpStatusUI();
   loadData();
   setInterval(loadData, 30000);
 }

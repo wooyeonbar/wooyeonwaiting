@@ -235,7 +235,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
   </div>
 
   <div class="refresh-row">
-    <button class="refresh-btn" onclick="loadData()">↻ 새로고침</button>
+    <button class="refresh-btn" onclick="refreshAll()">↻ 새로고침</button>
   </div>
 </div>
 
@@ -290,8 +290,7 @@ function doLogout() {
   document.getElementById('pwInput').value = '';
 }
 
-async function initAdmin() {
-  // 구글시트에서 설정값 전체 동기화
+async function syncSettings() {
   try {
     const r = await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('설정!A1:A6')+'?key='+API_KEY);
     const d = await r.json();
@@ -303,14 +302,21 @@ async function initAdmin() {
       const bF = parseInt(d.values[5] && d.values[5][0]) || 0;
       seats = { tM, tF, bM, bF };
       localStorage.setItem('seats', JSON.stringify(seats));
+      ['tM','tF','bM','bF'].forEach(k => { document.getElementById(k).textContent = seats[k] || 0; });
+      updateSeatUI('t', TABLE_MAX);
+      updateSeatUI('b', BAR_MAX);
+      updateOpStatusUI();
     }
   } catch(e) {}
-  ['tM','tF','bM','bF'].forEach(k => { document.getElementById(k).textContent = seats[k] || 0; });
-  updateSeatUI('t', TABLE_MAX);
-  updateSeatUI('b', BAR_MAX);
-  updateOpStatusUI();
+}
+
+async function initAdmin() {
+  await syncSettings();
   loadData();
-  setInterval(loadData, 30000);
+  setInterval(async () => {
+    await syncSettings();
+    await loadData();
+  }, 30000);
 }
 
 function updateSeat(id, delta) {
@@ -473,6 +479,11 @@ function getTimeStr(row) {
   return t.substring(5,10).replace('-','/') + ' ' + t.substring(11,16);
 }
 
+
+async function refreshAll() {
+  await syncSettings();
+  await loadData();
+}
 
 async function loadData() {
   try {

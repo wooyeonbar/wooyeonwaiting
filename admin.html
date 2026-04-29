@@ -243,9 +243,10 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 const SHEET_ID = '1NmPb6wxX0usqeP-gd7cFQPgHecLQsCYcA3i3wcU3uwc';
 const API_KEY = 'AIzaSyDNs6DjFlPRHukWl572r1pMZV72F6ZtODI';
 const RANGE = '시트1!A:H';
-const ADMIN_PW = '1234';
+const ADMIN_PW = '1128';
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbzvIfxTPJVZUfjED-3XwLcHKRfbHouWLVFh9grynew8FdjUavr5nikX5wJMDdcYf1vH/exec';
 const TABLE_MAX = 26;
+const SETTINGS_RANGE = '설정!A1:A6';
 const BAR_MAX = 6;
 
 let rawRows = [];
@@ -253,6 +254,27 @@ let starred = JSON.parse(localStorage.getItem('starred') || '[]');
 let hearted = JSON.parse(localStorage.getItem('hearted') || '[]');
 let seats = JSON.parse(localStorage.getItem('seats') || '{"tM":0,"tF":0,"bM":0,"bF":0}');
 let isFull = false;
+let lastRowCount = -1; // 이전 대기 인원 수 추적
+
+// 브라우저 알림 권한 요청
+function requestNotificationPermission() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
+
+function sendBrowserNotification(row) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  const seat = row[7] || '테이블석';
+  const seatLabel = seat === '프리패스' ? '🥃 프리패스' : seat === '바자리' ? '닷지석' : '테이블석';
+  const n = new Notification('🔔 새 웨이팅 등록!', {
+    body: row[3] + ' · ' + row[4] + ' · ' + row[5] + '명 · ' + seatLabel,
+    icon: 'https://wooyeonbar.github.io/wooyeonwaiting/favicon.ico',
+    badge: 'https://wooyeonbar.github.io/wooyeonwaiting/favicon.ico',
+    tag: 'waiting-' + Date.now()
+  });
+  n.onclick = function() { window.focus(); };
+}
 let comingSet = JSON.parse(localStorage.getItem('comingSet') || '[]');
 
 function doLogin() {
@@ -269,6 +291,7 @@ function doLogout() {
 }
 
 async function initAdmin() {
+  requestNotificationPermission();
   ['tM','tF','bM','bF'].forEach(k => { document.getElementById(k).textContent = seats[k] || 0; });
   updateSeatUI('t', TABLE_MAX);
   updateSeatUI('b', BAR_MAX);
@@ -298,11 +321,13 @@ function updateSeat(id, delta) {
   seats[id] = val;
   localStorage.setItem('seats', JSON.stringify(seats));
   updateSeatUI(prefix, max);
+  // 모든 좌석 변경을 구글시트에 저장
+  const tTotal = (parseInt(seats.tM)||0) + (parseInt(seats.tF)||0);
+  fetch(GAS_URL + '?type=setSeatDetail&tM='+seats.tM+'&tF='+seats.tF+'&bM='+seats.bM+'&bF='+seats.bF);
   if (prefix === 't') {
-    const tTotal = (parseInt(seats.tM)||0) + (parseInt(seats.tF)||0);
     const remain = Math.max(TABLE_MAX - tTotal, 0);
-    const newFull = tTotal >= TABLE_MAX;
-    isFull = newFull;
+    const newFull2 = tTotal >= TABLE_MAX;
+    isFull = newFull2;
     updateOpStatusUI();
     fetch(GAS_URL + '?type=setFull&value=' + isFull);
     fetch(GAS_URL + '?type=setSeats&value=' + remain);
@@ -449,7 +474,14 @@ async function loadData() {
     const res = await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(RANGE)+'?key='+API_KEY);
     const data = await res.json();
     if (data.error) return;
-    rawRows = (data.values||[]).slice(1).filter(r => r[3] && r[3].toString().trim() !== '');
+    const newRows = (data.values||[]).slice(1).filter(r => r[3] && r[3].toString().trim() !== '');
+    // 새 등록 감지 → 알림
+    if (lastRowCount >= 0 && newRows.length > lastRowCount) {
+      const newOnes = newRows.slice(lastRowCount);
+      newOnes.forEach(row => sendBrowserNotification(row));
+    }
+    lastRowCount = newRows.length;
+    rawRows = newRows;
     // 삭제된 행 starred/hearted 정리
     starred = starred.filter(i => i < rawRows.length);
     hearted = hearted.filter(i => i < rawRows.length);

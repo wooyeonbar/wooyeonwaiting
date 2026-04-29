@@ -28,17 +28,14 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 .logout-btn { font-size: 11px; color: var(--text3); background: none; border: none; cursor: pointer; }
 .section { margin-bottom: 1rem; }
 .section-label { font-size: 10px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.6rem; }
-.status-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1rem; display: flex; justify-content: space-between; align-items: center; }
-.status-dot-wrap { display: flex; align-items: center; gap: 8px; }
-.status-dot { width: 10px; height: 10px; border-radius: 50%; }
-.status-dot.on { background: var(--danger); box-shadow: 0 0 6px var(--danger); animation: pulse 2s infinite; }
-.status-dot.off { background: var(--text3); }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-.status-text { font-size: 13px; color: var(--text); }
-.status-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+/* Seat card */
 .seat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 8px; }
-.seat-title { font-size: 12px; font-weight: 500; margin-bottom: 0.7rem; display: flex; justify-content: space-between; align-items: center; }
-.seat-capacity { font-size: 11px; color: var(--text3); font-weight: 400; }
+.seat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.7rem; }
+.seat-name { font-size: 12px; font-weight: 500; }
+.seat-meta { text-align: right; }
+.seat-meta-nums { font-size: 11px; color: var(--text2); }
+.seat-meta-cap { font-size: 10px; color: var(--text3); margin-top: 1px; }
 .seat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 .seat-input-wrap { display: flex; align-items: center; gap: 6px; }
 .seat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
@@ -52,15 +49,39 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 .counter-btn:hover:not(:disabled) { background: var(--border); }
 .counter-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 .counter-val { width: 32px; height: 28px; background: var(--bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text); display: flex; align-items: center; justify-content: center; }
-.seat-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+.seat-bar { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 4px; }
 .seat-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
 .seat-bar-fill.male { background: var(--male); }
 .seat-bar-fill.female { background: var(--female); }
-.seat-ratio { font-size: 11px; color: var(--text3); margin-top: 4px; }
-.seat-remain { font-size: 11px; margin-top: 3px; font-weight: 500; }
+
+/* 운영상태 인라인 */
+.op-status { display: flex; align-items: center; gap: 7px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.op-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.op-dot.on { background: var(--danger); box-shadow: 0 0 5px var(--danger); animation: pulse 2s infinite; }
+.op-dot.off { background: var(--text3); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.op-text { font-size: 12px; }
+.seat-remain { font-size: 11px; margin-left: auto; font-weight: 500; }
 .seat-remain.ok { color: var(--success); }
 .seat-remain.warn { color: var(--warning); }
 .seat-remain.full { color: var(--danger); }
+
+/* Next recommend */
+.next-section { margin-bottom: 1rem; }
+.next-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1rem; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.next-item.rank1 { border-color: #f0b429; background: #fffbf0; }
+.next-item.rank2 { border-color: #c8c8d8; background: #f8f8ff; }
+.next-item.rank3 { border-color: var(--border2); }
+.next-rank { font-size: 11px; font-weight: 500; min-width: 18px; flex-shrink: 0; }
+.next-rank.r1 { color: #c89010; }
+.next-rank.r2 { color: #8888a8; }
+.next-rank.r3 { color: var(--text3); }
+.next-info { flex: 1; min-width: 0; }
+.next-name-row { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.next-name { font-size: 13px; font-weight: 500; }
+.next-meta { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.next-actions { display: flex; gap: 5px; flex-shrink: 0; }
+.next-empty { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem; text-align: center; font-size: 13px; color: var(--text3); }
 
 /* Waiting list */
 .waiting-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
@@ -73,7 +94,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 .star-btn.active { color: #f0b429; }
 .waiting-num { font-size: 11px; color: var(--text3); min-width: 18px; flex-shrink: 0; }
 .waiting-info { flex: 1; min-width: 0; }
-.waiting-name-row { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.name-row { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
 .waiting-name { font-size: 13px; font-weight: 500; }
 .waiting-meta { font-size: 11px; color: var(--text3); margin-top: 1px; }
 .gender-badge { font-size: 10px; padding: 1px 6px; border-radius: 4px; flex-shrink: 0; }
@@ -81,19 +102,14 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 .gender-badge.female { background: #fbeef5; color: var(--female); }
 .seat-badge { font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 500; flex-shrink: 0; }
 .seat-badge.table { background: #eef3fb; color: #2a5fa8; }
-.seat-badge.bar { background: #eef6f1; color: #2a7a4a; }
+.seat-badge.dodgy { background: #eef6f1; color: #2a7a4a; }
 .seat-badge.free { background: #fdf6e0; color: #8a6020; }
-.waiting-actions { display: flex; gap: 5px; flex-shrink: 0; }
+.action-btns { display: flex; gap: 5px; flex-shrink: 0; }
 .action-btn { padding: 5px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; white-space: nowrap; border: 1px solid var(--border); background: var(--surface2); color: var(--text2); }
-.action-btn:hover { border-color: var(--border2); }
 .action-btn.call { background: #eef6f1; border-color: #c8e0d0; color: var(--success); }
 .action-btn.enter { background: var(--accent); border-color: var(--accent); color: #fff; }
-.action-btn.enter:hover { background: #3a3834; }
 
-.next-banner { background: #fffbf0; border: 1px solid #e8d89a; border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 8px; display: none; }
-.next-label { font-size: 10px; color: var(--warning); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
-.next-name { font-size: 15px; font-weight: 500; }
-.next-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
+/* Stats */
 .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 .stat-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1rem; }
 .stat-mini-label { font-size: 10px; color: var(--text3); margin-bottom: 4px; }
@@ -108,6 +124,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 </style>
 </head>
 <body>
+
 <div class="login-wrap" id="loginWrap">
   <div class="login-box">
     <p class="login-title">관리자 로그인</p>
@@ -124,6 +141,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
     <button class="logout-btn" onclick="doLogout()">로그아웃</button>
   </div>
 
+  <!-- 통계 -->
   <div class="section">
     <div class="stats-row">
       <div class="stat-mini">
@@ -139,23 +157,19 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
     </div>
   </div>
 
-  <div class="section">
-    <p class="section-label">운영 상태</p>
-    <div class="status-card">
-      <div class="status-dot-wrap">
-        <div class="status-dot off" id="fullDot"></div>
-        <div>
-          <p class="status-text" id="fullStatusText">웨이팅 불가</p>
-          <p class="status-sub" id="fullStatusSub">테이블이 꽉 차면 자동으로 켜져요</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  <!-- 매장 현황 -->
   <div class="section">
     <p class="section-label">현재 매장 현황</p>
+
+    <!-- 테이블석 -->
     <div class="seat-card">
-      <div class="seat-title">테이블석 <span class="seat-capacity">최대 26명</span></div>
+      <div class="seat-header">
+        <span class="seat-name">테이블석</span>
+        <div class="seat-meta">
+          <div class="seat-meta-nums" id="tMetaNums">남 0명 / 여 0명 / 총 0명</div>
+          <div class="seat-meta-cap">최대 26명</div>
+        </div>
+      </div>
       <div class="seat-row">
         <div class="seat-input-wrap">
           <div class="seat-dot male"></div>
@@ -178,11 +192,23 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
       </div>
       <div class="seat-bar"><div class="seat-bar-fill male" id="tMBar" style="width:0%"></div></div>
       <div class="seat-bar" style="margin-top:3px"><div class="seat-bar-fill female" id="tFBar" style="width:0%"></div></div>
-      <p class="seat-ratio" id="tRatio">남 0 / 여 0 / 총 0명</p>
-      <p class="seat-remain ok" id="tRemain">남은 자리 26명</p>
+      <!-- 운영상태 인라인 -->
+      <div class="op-status">
+        <div class="op-dot off" id="opDot"></div>
+        <span class="op-text" id="opText" style="color:var(--text3)">웨이팅 불가</span>
+        <span class="seat-remain ok" id="tRemain">남은 자리 26명</span>
+      </div>
     </div>
+
+    <!-- 바석 -->
     <div class="seat-card">
-      <div class="seat-title">바석 <span class="seat-capacity">최대 6명</span></div>
+      <div class="seat-header">
+        <span class="seat-name">닷지석</span>
+        <div class="seat-meta">
+          <div class="seat-meta-nums" id="bMetaNums">남 0명 / 여 0명 / 총 0명</div>
+          <div class="seat-meta-cap">최대 6명</div>
+        </div>
+      </div>
       <div class="seat-row">
         <div class="seat-input-wrap">
           <div class="seat-dot male"></div>
@@ -205,16 +231,16 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
       </div>
       <div class="seat-bar"><div class="seat-bar-fill male" id="bMBar" style="width:0%"></div></div>
       <div class="seat-bar" style="margin-top:3px"><div class="seat-bar-fill female" id="bFBar" style="width:0%"></div></div>
-      <p class="seat-ratio" id="bRatio">남 0 / 여 0 / 총 0명</p>
     </div>
   </div>
 
-  <div class="next-banner" id="nextBanner">
-    <p class="next-label">다음 입장 추천</p>
-    <p class="next-name" id="nextName">—</p>
-    <p class="next-meta" id="nextMeta">—</p>
+  <!-- 다음 입장 추천 -->
+  <div class="section next-section">
+    <p class="section-label">다음 입장 추천</p>
+    <div id="nextList"></div>
   </div>
 
+  <!-- 대기 목록 -->
   <div class="section">
     <p class="section-label">대기 목록</p>
     <div class="waiting-card" id="waitingList">
@@ -236,16 +262,9 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbzvIfxTPJVZUfjED-3XwLcH
 const TABLE_MAX = 26;
 const BAR_MAX = 6;
 
-// 우선순위: 프리패스(0) > 별표(1) > 바(2) > 테이블(3)
-function getSeatPriority(seat) {
-  if (seat === '프리패스') return 0;
-  if (seat === '바자리') return 2;
-  return 3; // 테이블석 기본
-}
-
+let rawRows = [];
 let allRows = [];
-let rawRows = []; // 원본 인덱스 보존용
-let starred = JSON.parse(localStorage.getItem('starred') || '[]'); // 원본 인덱스 기준
+let starred = JSON.parse(localStorage.getItem('starred') || '[]');
 let seats = JSON.parse(localStorage.getItem('seats') || '{"tM":0,"tF":0,"bM":0,"bF":0}');
 let isFull = false;
 
@@ -254,9 +273,7 @@ function doLogin() {
     document.getElementById('loginWrap').style.display = 'none';
     document.getElementById('adminWrap').style.display = 'block';
     initAdmin();
-  } else {
-    document.getElementById('loginErr').textContent = '비밀번호가 틀렸어요.';
-  }
+  } else { document.getElementById('loginErr').textContent = '비밀번호가 틀렸어요.'; }
 }
 function doLogout() {
   document.getElementById('loginWrap').style.display = 'flex';
@@ -285,14 +302,14 @@ function updateSeat(id, delta) {
   seats[id] = val;
   localStorage.setItem('seats', JSON.stringify(seats));
   updateSeatUI(prefix, max);
-  updateNextRecommend();
+  renderNext();
   if (prefix === 't') {
     const tTotal = (parseInt(seats.tM)||0) + (parseInt(seats.tF)||0);
     const remain = Math.max(TABLE_MAX - tTotal, 0);
     const newFull = tTotal >= TABLE_MAX;
     if (newFull !== isFull) {
       isFull = newFull;
-      updateFullStatusUI();
+      updateOpStatusUI();
       fetch(GAS_URL + '?type=setFull&value=' + isFull);
     }
     fetch(GAS_URL + '?type=setSeats&value=' + remain);
@@ -306,33 +323,33 @@ function updateSeatUI(prefix, max) {
   const remain = Math.max(max - total, 0);
   document.getElementById(prefix+'MBar').style.width = Math.min(m/max*100,100) + '%';
   document.getElementById(prefix+'FBar').style.width = Math.min(f/max*100,100) + '%';
-  document.getElementById(prefix+'Ratio').textContent = '남 ' + m + ' / 여 ' + f + ' / 총 ' + total + '명';
-  const mPlus = document.getElementById(prefix+'MPlus');
-  const fPlus = document.getElementById(prefix+'FPlus');
-  if (mPlus) mPlus.disabled = total >= max;
-  if (fPlus) fPlus.disabled = total >= max;
+  // 우상단 메타
+  document.getElementById(prefix+'MetaNums').textContent = '남 '+m+'명 / 여 '+f+'명 / 총 '+total+'명';
+  // + 버튼 제한
+  const mP = document.getElementById(prefix+'MPlus');
+  const fP = document.getElementById(prefix+'FPlus');
+  if (mP) mP.disabled = total >= max;
+  if (fP) fP.disabled = total >= max;
+  // 테이블 남은 자리
   if (prefix === 't') {
-    const remainEl = document.getElementById('tRemain');
-    if (remain === 0) { remainEl.textContent = '만석!'; remainEl.className = 'seat-remain full'; }
-    else if (remain <= 3) { remainEl.textContent = '남은 자리 ' + remain + '명'; remainEl.className = 'seat-remain warn'; }
-    else { remainEl.textContent = '남은 자리 ' + remain + '명'; remainEl.className = 'seat-remain ok'; }
+    const el = document.getElementById('tRemain');
+    if (remain === 0) { el.textContent = '만석!'; el.className = 'seat-remain full'; }
+    else if (remain <= 3) { el.textContent = '남은 자리 '+remain+'명'; el.className = 'seat-remain warn'; }
+    else { el.textContent = '남은 자리 '+remain+'명'; el.className = 'seat-remain ok'; }
   }
 }
 
-function updateFullStatusUI() {
-  const dot = document.getElementById('fullDot');
-  const text = document.getElementById('fullStatusText');
-  const sub = document.getElementById('fullStatusSub');
+function updateOpStatusUI() {
+  const dot = document.getElementById('opDot');
+  const text = document.getElementById('opText');
   if (isFull) {
-    dot.className = 'status-dot on';
+    dot.className = 'op-dot on';
     text.textContent = '만석 — 웨이팅 등록 가능';
     text.style.color = 'var(--danger)';
-    sub.textContent = '테이블 26명 꽉 찼어요';
   } else {
-    dot.className = 'status-dot off';
+    dot.className = 'op-dot off';
     text.textContent = '웨이팅 불가';
-    text.style.color = 'var(--text)';
-    sub.textContent = '테이블이 꽉 차면 자동으로 켜져요';
+    text.style.color = 'var(--text3)';
   }
 }
 
@@ -340,36 +357,24 @@ function toggleStar(rawIdx) {
   const i = starred.indexOf(rawIdx);
   if (i >= 0) starred.splice(i, 1); else starred.push(rawIdx);
   localStorage.setItem('starred', JSON.stringify(starred));
-  sortAndRender();
-  updateNextRecommend();
+  sortRows();
+  renderNext();
+  renderList();
 }
 
 function callGuest(phone) {
   window.location.href = 'tel:' + phone.replace(/[^0-9]/g, '');
 }
 
-function updateNextRecommend() {
-  if (!allRows.length) { document.getElementById('nextBanner').style.display = 'none'; return; }
-  // 우선순위 1위 = 프리패스
-  const freePass = allRows.find(r => (r.row[7]||'') === '프리패스');
-  if (freePass) { showNextBanner(freePass.row, '프리패스'); return; }
-  // 우선순위 2위 = 별표
-  const starredRow = allRows.find(r => starred.includes(r.rawIdx));
-  if (starredRow) { showNextBanner(starredRow.row, '★ 우선순번'); return; }
-  // 우선순위 3위 = 성비 기반
-  const tM = parseInt(document.getElementById('tM').textContent)||0;
-  const tF = parseInt(document.getElementById('tF').textContent)||0;
-  const bM = parseInt(document.getElementById('bM').textContent)||0;
-  const bF = parseInt(document.getElementById('bF').textContent)||0;
-  const needMale = (tM+bM) <= (tF+bF);
-  const rec = allRows.find(r => needMale ? r.row[4]==='남성' : r.row[4]==='여성') || allRows[0];
-  showNextBanner(rec.row, needMale ? '남성 부족' : '여성 부족');
-}
-
-function showNextBanner(row, reason) {
-  document.getElementById('nextBanner').style.display = 'block';
-  document.getElementById('nextName').textContent = (row[3]||'—') + ' (' + (row[4]||'—') + ', ' + (row[5]||'—') + '명)';
-  document.getElementById('nextMeta').textContent = (row[6]||'') + ' · ' + reason;
+function sendSMS(rawIdx) {
+  const item = allRows.find(r => r.rawIdx === rawIdx);
+  if (!item) return;
+  const name = item.row[3]||'';
+  const phone = item.row[6]||'';
+  const msg = '[혼술바 우연] '+name+'님, 곧 입장 가능합니다! 5분 내로 오시지 않으면 다음 순번으로 넘어가요 :)';
+  if (confirm(name+'님에게 문자를 발송할까요?\n\n'+msg)) {
+    alert('알리고 API 연동 후 자동 발송 가능합니다.\n번호: '+phone);
+  }
 }
 
 async function enterGuest(rawIdx) {
@@ -389,57 +394,95 @@ async function enterGuest(rawIdx) {
   await loadData();
 }
 
-function sendSMS(row) {
-  const name = row[3]||'';
-  const phone = row[6]||'';
-  const msg = '[혼술바 우연] ' + name + '님, 곧 입장 가능합니다! 5분 내로 오시지 않으면 다음 순번으로 넘어가요 :)';
-  if (confirm(name + '님에게 문자를 발송할까요?\n\n' + msg)) {
-    alert('알리고 API 연동 후 자동 발송 가능합니다.\n번호: ' + phone);
-  }
-}
-
 function getSeatBadge(seat) {
-  if (seat === '바자리') return '<span class="seat-badge bar">바</span>';
+  if (seat === '바자리') return '<span class="seat-badge dodgy">닷</span>';
   if (seat === '프리패스') return '<span class="seat-badge free">프</span>';
   return '<span class="seat-badge table">테</span>';
 }
 
+function getActionBtns(rawIdx, phone) {
+  return `<div class="action-btns">
+    <button class="action-btn" onclick="sendSMS(${rawIdx})">문자</button>
+    <button class="action-btn call" onclick="callGuest('${phone}')">전화</button>
+    <button class="action-btn enter" onclick="enterGuest(${rawIdx})">입장</button>
+  </div>`;
+}
+
+// 정렬: 프리패스(0) > 별표(1) > 닷지(2) > 테이블(3), 같으면 rawIdx순
+function getSortKey(rawIdx, seat) {
+  const isStarred = starred.includes(rawIdx);
+  if (seat === '프리패스') return 0;
+  if (isStarred) return 1;
+  if (seat === '바자리') return 2;
+  return 3;
+}
+
+function sortRows() {
+  allRows = rawRows.map((row, rawIdx) => ({ row, rawIdx })).sort((a, b) => {
+    const aKey = getSortKey(a.rawIdx, a.row[7]||'테이블석');
+    const bKey = getSortKey(b.rawIdx, b.row[7]||'테이블석');
+    if (aKey !== bKey) return aKey - bKey;
+    // 같은 순위 내 성비 부족 성별 우선
+    const tM = parseInt(document.getElementById('tM').textContent)||0;
+    const tF = parseInt(document.getElementById('tF').textContent)||0;
+    const bM = parseInt(document.getElementById('bM').textContent)||0;
+    const bF = parseInt(document.getElementById('bF').textContent)||0;
+    const needMale = (tM+bM) <= (tF+bF);
+    const aGender = a.row[4]||'';
+    const bGender = b.row[4]||'';
+    const aMatch = needMale ? aGender==='남성' : aGender==='여성';
+    const bMatch = needMale ? bGender==='남성' : bGender==='여성';
+    if (aMatch && !bMatch) return -1;
+    if (!aMatch && bMatch) return 1;
+    return a.rawIdx - b.rawIdx;
+  });
+}
+
+function renderNext() {
+  const el = document.getElementById('nextList');
+  if (!allRows.length) { el.innerHTML = '<div class="next-empty">현재 대기 없음</div>'; return; }
+
+  const top3 = allRows.slice(0, 3);
+  const rankClass = ['rank1','rank2','rank3'];
+  const rankLabel = ['1st','2nd','3rd'];
+  const rankLabelClass = ['r1','r2','r3'];
+
+  el.innerHTML = top3.map(({row, rawIdx}, i) => {
+    const gender = row[4]||'';
+    const gClass = gender==='남성'?'male':'female';
+    const seat = row[7]||'테이블석';
+    const isStarred = starred.includes(rawIdx);
+    const timeStr = row[2]||'';
+    const datepart = timeStr.substring(5,10).replace('-','/');
+    const timepart = timeStr.substring(11,16);
+    const time = timeStr ? datepart+' '+timepart : '';
+    return `<div class="next-item ${rankClass[i]}">
+      <span class="next-rank ${rankLabelClass[i]}">${rankLabel[i]}</span>
+      <div class="next-info">
+        <div class="next-name-row">
+          <span class="next-name">${row[3]||'—'}</span>
+          <span class="gender-badge ${gClass}">${gender}</span>
+          ${getSeatBadge(seat)}
+          ${isStarred?'<span style="font-size:12px;color:#f0b429">★</span>':''}
+        </div>
+        <p class="next-meta">${row[5]||'—'}명 · ${time}</p>
+      </div>
+      ${getActionBtns(rawIdx, row[6]||'')}
+    </div>`;
+  }).join('');
+}
+
 async function loadData() {
   try {
-    const res = await fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(RANGE) + '?key=' + API_KEY);
+    const res = await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(RANGE)+'?key='+API_KEY);
     const data = await res.json();
     if (data.error) return;
     rawRows = (data.values||[]).slice(1).filter(r => r[3] && r[3].toString().trim() !== '');
-    sortAndRender();
+    sortRows();
+    renderNext();
+    renderList();
     updateStats();
-    updateNextRecommend();
   } catch(e) {}
-}
-
-function sortAndRender() {
-  // 우선순위 정렬: 프리패스(0) > 별표(1) > 바(2) > 테이블(3), 같으면 등록순
-  allRows = rawRows.map((row, rawIdx) => ({ row, rawIdx })).sort((a, b) => {
-    const aSeat = a.row[7] || '테이블석';
-    const bSeat = b.row[7] || '테이블석';
-    const aStarred = starred.includes(a.rawIdx);
-    const bStarred = starred.includes(b.rawIdx);
-
-    // 프리패스 최우선
-    if (aSeat === '프리패스' && bSeat !== '프리패스') return -1;
-    if (bSeat === '프리패스' && aSeat !== '프리패스') return 1;
-
-    // 별표 다음
-    if (aStarred && !bStarred) return -1;
-    if (bStarred && !aStarred) return 1;
-
-    // 바 > 테이블
-    if (aSeat === '바자리' && bSeat !== '바자리') return -1;
-    if (bSeat === '바자리' && aSeat !== '바자리') return 1;
-
-    // 같으면 등록순
-    return a.rawIdx - b.rawIdx;
-  });
-  renderList();
 }
 
 function updateStats() {
@@ -449,37 +492,29 @@ function updateStats() {
 
 function renderList() {
   const el = document.getElementById('waitingList');
-  if (!allRows.length) {
-    el.innerHTML = '<div class="waiting-empty">현재 대기 없음</div>';
-    document.getElementById('nextBanner').style.display = 'none';
-    return;
-  }
+  if (!allRows.length) { el.innerHTML = '<div class="waiting-empty">현재 대기 없음</div>'; return; }
   el.innerHTML = allRows.map(({row, rawIdx}, displayIdx) => {
     const isStarred = starred.includes(rawIdx);
     const gender = row[4]||'';
-    const gClass = gender==='남성' ? 'male' : 'female';
-    const seat = row[7] || '테이블석';
-    const timeStr = row[2] || '';
+    const gClass = gender==='남성'?'male':'female';
+    const seat = row[7]||'테이블석';
+    const timeStr = row[2]||'';
     const datepart = timeStr.substring(5,10).replace('-','/');
     const timepart = timeStr.substring(11,16);
-    const time = timeStr ? datepart + ' ' + timepart : '';
-    const priorityClass = seat === '프리패스' ? 'priority-free' : isStarred ? 'priority-star' : '';
+    const time = timeStr ? datepart+' '+timepart : '';
+    const priorityClass = seat==='프리패스'?'priority-free':isStarred?'priority-star':'';
     return `<div class="waiting-item ${priorityClass}">
       <button class="star-btn ${isStarred?'active':''}" onclick="toggleStar(${rawIdx})">★</button>
       <span class="waiting-num">${displayIdx+1}</span>
       <div class="waiting-info">
-        <div class="waiting-name-row">
+        <div class="name-row">
           <span class="waiting-name">${row[3]||'—'}</span>
           <span class="gender-badge ${gClass}">${gender}</span>
           ${getSeatBadge(seat)}
         </div>
         <p class="waiting-meta">${row[5]||'—'}명 · ${time}</p>
       </div>
-      <div class="waiting-actions">
-        <button class="action-btn" onclick="sendSMS(rawRows[${rawIdx}])">문자</button>
-        <button class="action-btn call" onclick="callGuest('${row[6]||''}')">전화</button>
-        <button class="action-btn enter" onclick="enterGuest(${rawIdx})">입장</button>
-      </div>
+      ${getActionBtns(rawIdx, row[6]||'')}
     </div>`;
   }).join('');
 }

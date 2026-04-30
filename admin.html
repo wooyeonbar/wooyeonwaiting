@@ -60,18 +60,15 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 .seat-remain.ok { color: var(--success); }
 .seat-remain.warn { color: var(--warning); }
 .seat-remain.full { color: var(--danger); }
-
-/* 대기 목록 */
 .waiting-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
 .waiting-empty { padding: 2rem; text-align: center; font-size: 13px; color: var(--text3); }
-.waiting-item { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+.waiting-item { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
 .waiting-item:last-child { border-bottom: none; }
 .waiting-item.hearted { outline: 2px solid #e879a8; outline-offset: -2px; background: #fff5f9; }
-.waiting-item.greyed { background: #f0f0f0 !important; outline: none !important; }
+.waiting-item.greyed { background: #efefef !important; outline: none !important; }
 .waiting-item.greyed .waiting-name { text-decoration: line-through; color: var(--text3); }
 .waiting-item.greyed .waiting-meta { color: var(--text3); }
 .waiting-item.coming-state { background: #f0f0f0; }
-
 .icon-btns { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
 .star-btn { background: none; border: none; font-size: 15px; cursor: pointer; line-height: 1; padding: 3px; color: var(--border2); transition: color 0.15s; }
 .star-btn.active { color: #f0b429; }
@@ -99,20 +96,18 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 .action-btn.noshow-label { background: var(--danger); border-color: var(--danger); color: #fff; cursor: default; opacity: 0.7; }
 .action-btn.noreply-label { background: var(--warning); border-color: var(--warning); color: #fff; cursor: default; opacity: 0.7; }
 .action-btn.visitx-label { background: #555; border-color: #555; color: #fff; cursor: default; opacity: 0.7; }
-
 .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 .stat-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1rem; }
 .stat-mini-label { font-size: 10px; color: var(--text3); margin-bottom: 4px; }
 .stat-mini-val { font-size: 26px; font-weight: 300; color: var(--text); line-height: 1; }
 .stat-mini-unit { font-size: 11px; color: var(--text3); margin-top: 3px; }
-.refresh-row { display: flex; justify-content: center; margin-top: 1rem; }
+.bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
 .refresh-btn { font-size: 11px; color: var(--text3); background: none; border: none; cursor: pointer; padding: 6px 12px; }
+.reset-btn { font-size: 11px; color: var(--danger); background: none; border: 1px solid var(--danger); border-radius: 6px; cursor: pointer; padding: 6px 12px; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
 .dot { display: inline-block; animation: blink 1.2s ease-in-out infinite; color: var(--text3); font-size: 22px; line-height: 1; }
 .dot:nth-child(2) { animation-delay: 0.2s; }
 .dot:nth-child(3) { animation-delay: 0.4s; }
-
-/* 커스텀 팝업 */
 .popup-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
 .popup-overlay.active { display: flex; }
 .popup-box { background: var(--surface); border-radius: 14px; padding: 1.5rem; width: 100%; max-width: 300px; }
@@ -138,7 +133,6 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
   </div>
 </div>
 
-<!-- 커스텀 팝업 -->
 <div class="popup-overlay" id="popupOverlay">
   <div class="popup-box">
     <p class="popup-title" id="popupTitle"></p>
@@ -246,8 +240,9 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
     </div>
   </div>
 
-  <div class="refresh-row">
+  <div class="bottom-row">
     <button class="refresh-btn" onclick="refreshAll()">↻ 새로고침</button>
+    <button class="reset-btn" onclick="resetAll()">영업 종료 / 초기화</button>
   </div>
 </div>
 
@@ -260,21 +255,27 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbzvIfxTPJVZUfjED-3XwLcH
 const TABLE_MAX = 26;
 const BAR_MAX = 6;
 
-let rawRows = [];
-let starred = JSON.parse(localStorage.getItem('starred') || '[]');
-let hearted = JSON.parse(localStorage.getItem('hearted') || '[]');
+let rawRows = []; // 구글시트에서 읽은 전체 데이터
+let allItems = []; // 화면에 표시할 항목 (구글시트 데이터 + 로컬 상태 합산)
+let starred = JSON.parse(localStorage.getItem('starred') || '[]'); // key 기반
+let hearted = JSON.parse(localStorage.getItem('hearted') || '[]'); // key 기반
 let seats = JSON.parse(localStorage.getItem('seats') || '{"tM":0,"tF":0,"bM":0,"bF":0}');
 let isFull = false;
 
-// 상태 관리: rawIdx → 'coming' | 'done' | 'noshow' | 'noreply' | 'visitx' | null
-let itemStates = JSON.parse(localStorage.getItem('itemStates') || '{}');
+// itemStates: { "이름|전화번호": 'coming'|'done'|'noshow'|'noreply'|'visitx' }
+let itemStates = JSON.parse(localStorage.getItem('itemStates2') || '{}');
 
-function saveStates() { localStorage.setItem('itemStates', JSON.stringify(itemStates)); }
+// 고유 키 생성 (이름+전화번호)
+function getKey(row) { return (row[3]||'') + '|' + (row[6]||''); }
+
+function saveStates() { localStorage.setItem('itemStates2', JSON.stringify(itemStates)); }
+function saveStarred() { localStorage.setItem('starred', JSON.stringify(starred)); }
+function saveHearted() { localStorage.setItem('hearted', JSON.stringify(hearted)); }
 
 // 팝업
 function showPopup(title, sub, btns) {
   document.getElementById('popupTitle').textContent = title;
-  document.getElementById('popupSub').textContent = sub;
+  document.getElementById('popupSub').textContent = sub || '';
   const btnsEl = document.getElementById('popupBtns');
   btnsEl.innerHTML = '';
   btns.forEach(b => {
@@ -307,11 +308,10 @@ async function syncSettings() {
     const d = await r.json();
     if (!d.error && d.values) {
       isFull = d.values[0] && d.values[0][0] === 'TRUE';
-      const tM = parseInt(d.values[2] && d.values[2][0]) || 0;
-      const tF = parseInt(d.values[3] && d.values[3][0]) || 0;
-      const bM = parseInt(d.values[4] && d.values[4][0]) || 0;
-      const bF = parseInt(d.values[5] && d.values[5][0]) || 0;
-      seats = { tM, tF, bM, bF };
+      seats.tM = parseInt(d.values[2] && d.values[2][0]) || 0;
+      seats.tF = parseInt(d.values[3] && d.values[3][0]) || 0;
+      seats.bM = parseInt(d.values[4] && d.values[4][0]) || 0;
+      seats.bF = parseInt(d.values[5] && d.values[5][0]) || 0;
       localStorage.setItem('seats', JSON.stringify(seats));
     }
   } catch(e) {}
@@ -323,11 +323,25 @@ async function syncSettings() {
 
 async function initAdmin() {
   await syncSettings();
-  loadData();
+  await loadData();
   setInterval(async () => { await syncSettings(); await loadData(); }, 30000);
 }
 
 async function refreshAll() { await syncSettings(); await loadData(); }
+
+// 초기화 (영업 종료)
+function resetAll() {
+  showPopup('영업 종료 / 초기화', '대기 목록 상태가 모두 초기화돼요.', [
+    { label: '초기화', cls: 'danger', action: async () => {
+      itemStates = {};
+      starred = [];
+      hearted = [];
+      saveStates(); saveStarred(); saveHearted();
+      await loadData();
+    }},
+    { label: '취소', cls: 'secondary', action: () => {} }
+  ]);
+}
 
 function updateSeat(id, delta) {
   const prefix = id[0];
@@ -342,9 +356,9 @@ function updateSeat(id, delta) {
   seats[id] = val;
   localStorage.setItem('seats', JSON.stringify(seats));
   updateSeatUI(prefix, max);
-  const tTotal = (parseInt(seats.tM)||0) + (parseInt(seats.tF)||0);
   fetch(GAS_URL + '?type=setSeatDetail&tM='+seats.tM+'&tF='+seats.tF+'&bM='+seats.bM+'&bF='+seats.bF);
   if (prefix === 't') {
+    const tTotal = (parseInt(seats.tM)||0) + (parseInt(seats.tF)||0);
     const remain = Math.max(TABLE_MAX - tTotal, 0);
     isFull = tTotal >= TABLE_MAX;
     updateOpStatusUI();
@@ -387,36 +401,37 @@ function updateOpStatusUI() {
   }
 }
 
-function toggleStar(rawIdx) {
-  const i = starred.indexOf(rawIdx);
-  if (i >= 0) starred.splice(i, 1); else starred.push(rawIdx);
-  localStorage.setItem('starred', JSON.stringify(starred));
+function toggleStar(key) {
+  const i = starred.indexOf(key);
+  if (i >= 0) starred.splice(i, 1); else starred.push(key);
+  saveStarred();
   renderList();
 }
 
-function toggleHeart(rawIdx) {
-  const i = hearted.indexOf(rawIdx);
-  if (i >= 0) hearted.splice(i, 1); else hearted.push(rawIdx);
-  localStorage.setItem('hearted', JSON.stringify(hearted));
+function toggleHeart(key) {
+  const i = hearted.indexOf(key);
+  if (i >= 0) hearted.splice(i, 1); else hearted.push(key);
+  saveHearted();
   renderList();
 }
 
 function callGuest(phone) { window.location.href = 'tel:' + phone.replace(/[^0-9]/g, ''); }
 
-function sendSMS(rawIdx) {
-  const row = rawRows[rawIdx];
-  if (!row) return;
-  const name = row[3]||'', phone = row[6]||'';
+function sendSMS(key) {
+  const item = allItems.find(it => it.key === key);
+  if (!item) return;
+  const name = item.row[3]||'', phone = item.row[6]||'';
   const msg = '[혼술바 우연] '+name+'님, 곧 입장 가능합니다! 5분 내로 오시지 않으면 다음 순번으로 넘어가요 :)';
   if (confirm(name+'님에게 문자를 발송할까요?\n\n'+msg)) {
     alert('알리고 API 연동 후 자동 발송 가능합니다.\n번호: '+phone);
   }
 }
 
-// 구글시트에서 삭제 + 카운트 제외 (화면에서는 안 지움)
-async function removeFromSheet(rawIdx) {
-  const row = rawRows[rawIdx];
-  if (!row) return;
+// 구글시트에서 해당 항목만 삭제
+async function removeFromSheet(key) {
+  const item = allItems.find(it => it.key === key);
+  if (!item) return;
+  const row = item.row;
   try {
     await fetch(GAS_URL, {
       method: 'POST', mode: 'no-cors',
@@ -426,42 +441,46 @@ async function removeFromSheet(rawIdx) {
   } catch(e) {}
 }
 
-// X 버튼 → 미응답 / 방문X 선택
-function clickX(rawIdx) {
+function clickX(key) {
   showPopup('사유를 선택해주세요', '', [
-    { label: '미응답', cls: 'warning', action: () => setStatus(rawIdx, 'noreply') },
-    { label: '방문 X', cls: 'danger', action: () => setStatus(rawIdx, 'visitx') },
+    { label: '미응답', cls: 'warning', action: async () => {
+      itemStates[key] = 'noreply';
+      saveStates();
+      await removeFromSheet(key);
+      await loadData();
+    }},
+    { label: '방문 X', cls: 'danger', action: async () => {
+      itemStates[key] = 'visitx';
+      saveStates();
+      await removeFromSheet(key);
+      await loadData();
+    }},
     { label: '취소', cls: 'secondary', action: () => {} },
   ]);
 }
 
-// O 버튼 → 오는 중
-function clickO(rawIdx) {
-  setStatus(rawIdx, 'coming');
-}
-
-// 오는 중 누름 → 입장처리/노쇼/취소
-function clickComing(rawIdx) {
-  showPopup('어떻게 처리할까요?', '', [
-    { label: '입장 처리', cls: 'primary', action: () => setStatus(rawIdx, 'done') },
-    { label: '노쇼', cls: 'danger', action: () => setStatus(rawIdx, 'noshow') },
-    { label: '취소', cls: 'secondary', action: () => {} },
-  ]);
-}
-
-async function setStatus(rawIdx, status) {
-  itemStates[rawIdx] = status;
+function clickO(key) {
+  itemStates[key] = 'coming';
   saveStates();
+  renderList();
+}
 
-  // 구글시트 삭제 + 카운트 제외 (회색처리 상태들)
-  const removeStatuses = ['done', 'noshow', 'noreply', 'visitx'];
-  if (removeStatuses.includes(status)) {
-    await removeFromSheet(rawIdx);
-    // 대기 목록 새로고침 (카운트 반영)
-    await loadData();
-  } else {
-    renderList();
-  }
+function clickComing(key) {
+  showPopup('어떻게 처리할까요?', '', [
+    { label: '입장 처리', cls: 'primary', action: async () => {
+      itemStates[key] = 'done';
+      saveStates();
+      await removeFromSheet(key);
+      await loadData();
+    }},
+    { label: '노쇼', cls: 'danger', action: async () => {
+      itemStates[key] = 'noshow';
+      saveStates();
+      await removeFromSheet(key);
+      await loadData();
+    }},
+    { label: '취소', cls: 'secondary', action: () => {} },
+  ]);
 }
 
 function getSeatBadge(seat) {
@@ -476,35 +495,27 @@ function getTimeStr(row) {
   return t.substring(5,10).replace('-','/') + ' ' + t.substring(11,16);
 }
 
-function getActionBtns(rawIdx, row) {
+function getActionBtns(key, row) {
   const phone = row[6]||'';
-  const state = itemStates[rawIdx] || null;
+  const state = itemStates[key] || null;
+  const safeKey = key.replace(/'/g, "\\'");
 
-  if (state === 'done') {
-    return `<div class="action-btns"><button class="action-btn done-label">입장완료</button></div>`;
-  }
-  if (state === 'noshow') {
-    return `<div class="action-btns"><button class="action-btn noshow-label">노쇼</button></div>`;
-  }
-  if (state === 'noreply') {
-    return `<div class="action-btns"><button class="action-btn noreply-label">미응답</button></div>`;
-  }
-  if (state === 'visitx') {
-    return `<div class="action-btns"><button class="action-btn visitx-label">방문X</button></div>`;
-  }
+  if (state === 'done') return `<div class="action-btns"><button class="action-btn done-label">입장완료</button></div>`;
+  if (state === 'noshow') return `<div class="action-btns"><button class="action-btn noshow-label">노쇼</button></div>`;
+  if (state === 'noreply') return `<div class="action-btns"><button class="action-btn noreply-label">미응답</button></div>`;
+  if (state === 'visitx') return `<div class="action-btns"><button class="action-btn visitx-label">방문X</button></div>`;
   if (state === 'coming') {
     return `<div class="action-btns">
-      <button class="action-btn" onclick="sendSMS(${rawIdx})">문자</button>
+      <button class="action-btn" onclick="sendSMS('${safeKey}')">문자</button>
       <button class="action-btn call" onclick="callGuest('${phone}')">전화</button>
-      <button class="action-btn coming" onclick="clickComing(${rawIdx})">오는 중</button>
+      <button class="action-btn coming" onclick="clickComing('${safeKey}')">오는 중</button>
     </div>`;
   }
-  // 기본 상태
   return `<div class="action-btns">
-    <button class="action-btn" onclick="sendSMS(${rawIdx})">문자</button>
+    <button class="action-btn" onclick="sendSMS('${safeKey}')">문자</button>
     <button class="action-btn call" onclick="callGuest('${phone}')">전화</button>
-    <button class="action-btn confirm-o" onclick="clickO(${rawIdx})">O</button>
-    <button class="action-btn confirm-x" onclick="clickX(${rawIdx})">X</button>
+    <button class="action-btn confirm-o" onclick="clickO('${safeKey}')">O</button>
+    <button class="action-btn confirm-x" onclick="clickX('${safeKey}')">X</button>
   </div>`;
 }
 
@@ -515,72 +526,91 @@ async function loadData() {
     if (data.error) return;
     rawRows = (data.values||[]).slice(1).filter(r => r[3] && r[3].toString().trim() !== '');
 
-    // 삭제된 행 정리
-    starred = starred.filter(i => i < rawRows.length);
-    hearted = hearted.filter(i => i < rawRows.length);
-    // itemStates는 유지 (회색처리 항목 보존)
-    localStorage.setItem('starred', JSON.stringify(starred));
-    localStorage.setItem('hearted', JSON.stringify(hearted));
+    // 구글시트에 있는 항목 + 로컬 상태(grey)인 항목 합산
+    const activeKeys = new Set(rawRows.map(r => getKey(r)));
+
+    // 로컬에 grey 상태로 남은 항목 (구글시트에서 삭제됐지만 화면엔 표시)
+    const greyKeys = Object.keys(itemStates).filter(k =>
+      ['done','noshow','noreply','visitx'].includes(itemStates[k]) && !activeKeys.has(k)
+    );
+
+    // allItems = 활성(구글시트) + 회색(로컬)
+    allItems = rawRows.map(r => ({ row: r, key: getKey(r) }));
+
+    // 회색 항목은 별도로 저장해두고 같이 표시
+    greyKeys.forEach(k => {
+      if (!allItems.find(it => it.key === k)) {
+        // 이름|전화번호 복원
+        const [name, phone] = k.split('|');
+        allItems.push({ row: ['','','',name,'','',phone,''], key: k, isGhost: true });
+      }
+    });
+
+    starred = starred.filter(k => allItems.some(it => it.key === k));
+    hearted = hearted.filter(k => allItems.some(it => it.key === k));
+    saveStarred(); saveHearted();
 
     renderList();
     updateStats();
   } catch(e) {}
 }
 
+const removedStates = ['done','noshow','noreply','visitx'];
+
 function updateStats() {
-  // 활성 대기만 카운트 (회색처리 제외)
-  const removedStates = ['done','noshow','noreply','visitx'];
-  const activeRows = rawRows.filter((_, i) => !removedStates.includes(itemStates[i]));
-  document.getElementById('totalCount').textContent = activeRows.length;
-  document.getElementById('totalPeople').textContent = activeRows.reduce((s,r) => s+(parseInt(r[5])||0), 0);
+  const active = allItems.filter(it => !removedStates.includes(itemStates[it.key]));
+  document.getElementById('totalCount').textContent = active.length;
+  document.getElementById('totalPeople').textContent = active.reduce((s,it) => s+(parseInt(it.row[5])||0), 0);
 }
 
 function renderList() {
   const el = document.getElementById('waitingList');
+  if (!allItems.length) { el.innerHTML = '<div class="waiting-empty">현재 대기 없음</div>'; return; }
 
-  // 별표 있는 항목 위로
-  const sorted = rawRows.map((row, rawIdx) => ({ row, rawIdx }))
-    .sort((a, b) => {
-      const aS = starred.includes(a.rawIdx);
-      const bS = starred.includes(b.rawIdx);
-      if (aS && !bS) return -1;
-      if (!aS && bS) return 1;
-      return a.rawIdx - b.rawIdx;
-    });
+  // 별표 있는 항목 먼저, 나머지 원래 순서
+  const sorted = [...allItems].sort((a, b) => {
+    const aS = starred.includes(a.key);
+    const bS = starred.includes(b.key);
+    if (aS && !bS) return -1;
+    if (!aS && bS) return 1;
+    return 0;
+  });
 
-  if (!sorted.length) { el.innerHTML = '<div class="waiting-empty">현재 대기 없음</div>'; return; }
-
-  const removedStates = ['done','noshow','noreply','visitx'];
-
-  el.innerHTML = sorted.map(({row, rawIdx}, displayIdx) => {
-    const isStarred = starred.includes(rawIdx);
-    const isHearted = hearted.includes(rawIdx);
-    const state = itemStates[rawIdx] || null;
-    const isGreyed = removedStates.includes(state) || state === 'coming';
+  let displayNum = 0;
+  el.innerHTML = sorted.map(({row, key, isGhost}) => {
+    const isStarred = starred.includes(key);
+    const isHearted = hearted.includes(key);
+    const state = itemStates[key] || null;
+    const isGreyed = removedStates.includes(state);
+    const isComing = state === 'coming';
     const gender = row[4]||'';
     const gClass = gender==='남성'?'male':'female';
     const seat = row[7]||'테이블석';
 
+    if (!isGreyed) displayNum++;
+
     let itemClass = '';
-    if (removedStates.includes(state)) itemClass = 'greyed';
-    else if (state === 'coming') itemClass = 'coming-state';
+    if (isGreyed) itemClass = 'greyed';
+    else if (isComing) itemClass = 'coming-state';
     else if (isHearted) itemClass = 'hearted';
+
+    const safeKey = key.replace(/'/g, "\\'");
 
     return `<div class="waiting-item ${itemClass}">
       <div class="icon-btns">
-        <button class="star-btn ${isStarred?'active':''}" onclick="toggleStar(${rawIdx})">★</button>
-        <button class="heart-btn ${isHearted?'active':''}" onclick="toggleHeart(${rawIdx})">♥</button>
+        <button class="star-btn ${isStarred?'active':''}" onclick="toggleStar('${safeKey}')">★</button>
+        <button class="heart-btn ${isHearted?'active':''}" onclick="toggleHeart('${safeKey}')">♥</button>
       </div>
-      <span class="waiting-num">${displayIdx+1}</span>
+      <span class="waiting-num">${isGreyed ? '—' : displayNum}</span>
       <div class="waiting-info">
         <div class="name-row">
           <span class="waiting-name">${row[3]||'—'}</span>
-          <span class="gender-badge ${gClass}">${gender}</span>
+          ${gender ? `<span class="gender-badge ${gClass}">${gender}</span>` : ''}
           ${getSeatBadge(seat)}
         </div>
-        <p class="waiting-meta">${row[5]||'—'}명 · ${getTimeStr(row)}</p>
+        <p class="waiting-meta">${row[5]?row[5]+'명 · ':''}${getTimeStr(row)}</p>
       </div>
-      ${getActionBtns(rawIdx, row)}
+      ${getActionBtns(key, row)}
     </div>`;
   }).join('');
 }

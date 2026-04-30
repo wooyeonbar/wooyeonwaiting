@@ -31,9 +31,8 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 .seat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 8px; }
 .seat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.7rem; }
 .seat-name { font-size: 12px; font-weight: 500; }
-.seat-meta { text-align: right; }
-.seat-meta-nums { font-size: 11px; color: var(--text2); }
-.seat-meta-cap { font-size: 10px; color: var(--text3); margin-top: 1px; }
+.seat-meta-nums { font-size: 11px; color: var(--text2); text-align: right; }
+.seat-meta-cap { font-size: 10px; color: var(--text3); margin-top: 1px; text-align: right; }
 .seat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 .seat-input-wrap { display: flex; align-items: center; gap: 6px; }
 .seat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
@@ -62,32 +61,22 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 .seat-remain.warn { color: var(--warning); }
 .seat-remain.full { color: var(--danger); }
 
-/* 별표 우선순위 배너 */
-.starred-section { margin-bottom: 1rem; }
-.starred-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1rem; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
-.starred-item.rank1 { border-color: #f0b429; background: #fffbf0; }
-.starred-item.rank2 { border-color: #c0c0d0; background: #f8f8ff; }
-.starred-item.rank3 { border-color: var(--border2); }
-.rank-label { font-size: 11px; font-weight: 600; min-width: 22px; flex-shrink: 0; }
-.rank-label.r1 { color: #c89010; }
-.rank-label.r2 { color: #8888a8; }
-.rank-label.r3 { color: var(--text3); }
-.starred-empty { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; font-size: 12px; color: var(--text3); }
-
 /* 대기 목록 */
 .waiting-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
 .waiting-empty { padding: 2rem; text-align: center; font-size: 13px; color: var(--text3); }
-.waiting-item { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; transition: border-color 0.2s; }
+.waiting-item { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
 .waiting-item:last-child { border-bottom: none; }
 .waiting-item.hearted { outline: 2px solid #e879a8; outline-offset: -2px; background: #fff5f9; }
+.waiting-item.greyed { background: #f0f0f0 !important; outline: none !important; }
+.waiting-item.greyed .waiting-name { text-decoration: line-through; color: var(--text3); }
+.waiting-item.greyed .waiting-meta { color: var(--text3); }
+.waiting-item.coming-state { background: #f0f0f0; }
 
-/* 아이콘 버튼들 */
 .icon-btns { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
-.star-btn { background: none; border: none; font-size: 15px; cursor: pointer; flex-shrink: 0; line-height: 1; padding: 3px; color: var(--border2); transition: color 0.15s; }
+.star-btn { background: none; border: none; font-size: 15px; cursor: pointer; line-height: 1; padding: 3px; color: var(--border2); transition: color 0.15s; }
 .star-btn.active { color: #f0b429; }
-.heart-btn { background: none; border: none; font-size: 15px; cursor: pointer; flex-shrink: 0; line-height: 1; padding: 3px; color: var(--border2); transition: color 0.15s; }
+.heart-btn { background: none; border: none; font-size: 15px; cursor: pointer; line-height: 1; padding: 3px; color: var(--border2); transition: color 0.15s; }
 .heart-btn.active { color: #e879a8; }
-
 .waiting-num { font-size: 11px; color: var(--text3); min-width: 18px; flex-shrink: 0; }
 .waiting-info { flex: 1; min-width: 0; }
 .name-row { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
@@ -100,14 +89,16 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 .seat-badge.table { background: #eef3fb; color: #2a5fa8; }
 .seat-badge.dodgy { background: #eef6f1; color: #2a7a4a; }
 .seat-badge.free { background: #fdf6e0; color: #8a6020; }
-.action-btns { display: flex; gap: 5px; flex-shrink: 0; }
-.action-btn { padding: 5px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; white-space: nowrap; border: 1px solid var(--border); background: var(--surface2); color: var(--text2); }
+.action-btns { display: flex; gap: 4px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+.action-btn { padding: 5px 7px; border-radius: 6px; font-size: 10px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; white-space: nowrap; border: 1px solid var(--border); background: var(--surface2); color: var(--text2); }
 .action-btn.call { background: #eef6f1; border-color: #c8e0d0; color: var(--success); }
-.action-btn.enter { background: var(--accent); border-color: var(--accent); color: #fff; }
-.action-btn.coming { background: #888; border-color: #888; color: #fff; }
 .action-btn.confirm-o { background: var(--success); border-color: var(--success); color: #fff; font-weight: 600; }
 .action-btn.confirm-x { background: var(--danger); border-color: var(--danger); color: #fff; font-weight: 600; }
-.waiting-item.coming-state { background: #f0f0f0; }
+.action-btn.coming { background: #888; border-color: #888; color: #fff; }
+.action-btn.done-label { background: #aaa; border-color: #aaa; color: #fff; cursor: default; }
+.action-btn.noshow-label { background: var(--danger); border-color: var(--danger); color: #fff; cursor: default; opacity: 0.7; }
+.action-btn.noreply-label { background: var(--warning); border-color: var(--warning); color: #fff; cursor: default; opacity: 0.7; }
+.action-btn.visitx-label { background: #555; border-color: #555; color: #fff; cursor: default; opacity: 0.7; }
 
 .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 .stat-mini { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1rem; }
@@ -120,6 +111,19 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 .dot { display: inline-block; animation: blink 1.2s ease-in-out infinite; color: var(--text3); font-size: 22px; line-height: 1; }
 .dot:nth-child(2) { animation-delay: 0.2s; }
 .dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* 커스텀 팝업 */
+.popup-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+.popup-overlay.active { display: flex; }
+.popup-box { background: var(--surface); border-radius: 14px; padding: 1.5rem; width: 100%; max-width: 300px; }
+.popup-title { font-size: 15px; font-weight: 500; margin-bottom: 0.4rem; }
+.popup-sub { font-size: 12px; color: var(--text3); margin-bottom: 1.2rem; }
+.popup-btns { display: flex; flex-direction: column; gap: 8px; }
+.popup-btn { padding: 11px; border-radius: 8px; border: none; font-size: 13px; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; font-weight: 500; }
+.popup-btn.primary { background: var(--accent); color: #fff; }
+.popup-btn.warning { background: var(--warning); color: #fff; }
+.popup-btn.danger { background: var(--danger); color: #fff; }
+.popup-btn.secondary { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
 </style>
 </head>
 <body>
@@ -131,6 +135,15 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
     <input class="login-input" type="password" id="pwInput" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="login-btn" onclick="doLogin()">로그인</button>
     <p class="login-err" id="loginErr"></p>
+  </div>
+</div>
+
+<!-- 커스텀 팝업 -->
+<div class="popup-overlay" id="popupOverlay">
+  <div class="popup-box">
+    <p class="popup-title" id="popupTitle"></p>
+    <p class="popup-sub" id="popupSub"></p>
+    <div class="popup-btns" id="popupBtns"></div>
   </div>
 </div>
 
@@ -160,7 +173,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
     <div class="seat-card">
       <div class="seat-header">
         <span class="seat-name">테이블석</span>
-        <div class="seat-meta">
+        <div>
           <div class="seat-meta-nums" id="tMetaNums">남 0명 / 여 0명 / 총 0명</div>
           <div class="seat-meta-cap">최대 26명</div>
         </div>
@@ -196,7 +209,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
     <div class="seat-card">
       <div class="seat-header">
         <span class="seat-name">닷지석</span>
-        <div class="seat-meta">
+        <div>
           <div class="seat-meta-nums" id="bMetaNums">남 0명 / 여 0명 / 총 0명</div>
           <div class="seat-meta-cap">최대 6명</div>
         </div>
@@ -226,7 +239,6 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
     </div>
   </div>
 
-  <!-- 대기 목록 -->
   <div class="section">
     <p class="section-label">대기 목록</p>
     <div class="waiting-card" id="waitingList">
@@ -246,7 +258,6 @@ const RANGE = '시트1!A:H';
 const ADMIN_PW = '1128';
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbzvIfxTPJVZUfjED-3XwLcHKRfbHouWLVFh9grynew8FdjUavr5nikX5wJMDdcYf1vH/exec';
 const TABLE_MAX = 26;
-const SETTINGS_RANGE = '설정!A1:A6';
 const BAR_MAX = 6;
 
 let rawRows = [];
@@ -254,28 +265,28 @@ let starred = JSON.parse(localStorage.getItem('starred') || '[]');
 let hearted = JSON.parse(localStorage.getItem('hearted') || '[]');
 let seats = JSON.parse(localStorage.getItem('seats') || '{"tM":0,"tF":0,"bM":0,"bF":0}');
 let isFull = false;
-let lastRowCount = -1; // 이전 대기 인원 수 추적
 
-// 브라우저 알림 권한 요청
-function requestNotificationPermission() {
-  if ('Notification' in window && Notification.permission === 'default') {
-    Notification.requestPermission();
-  }
-}
+// 상태 관리: rawIdx → 'coming' | 'done' | 'noshow' | 'noreply' | 'visitx' | null
+let itemStates = JSON.parse(localStorage.getItem('itemStates') || '{}');
 
-function sendBrowserNotification(row) {
-  if (!('Notification' in window) || Notification.permission !== 'granted') return;
-  const seat = row[7] || '테이블석';
-  const seatLabel = seat === '프리패스' ? '🥃 프리패스' : seat === '바자리' ? '닷지석' : '테이블석';
-  const n = new Notification('🔔 새 웨이팅 등록!', {
-    body: row[3] + ' · ' + row[4] + ' · ' + row[5] + '명 · ' + seatLabel,
-    icon: 'https://wooyeonbar.github.io/wooyeonwaiting/favicon.ico',
-    badge: 'https://wooyeonbar.github.io/wooyeonwaiting/favicon.ico',
-    tag: 'waiting-' + Date.now()
+function saveStates() { localStorage.setItem('itemStates', JSON.stringify(itemStates)); }
+
+// 팝업
+function showPopup(title, sub, btns) {
+  document.getElementById('popupTitle').textContent = title;
+  document.getElementById('popupSub').textContent = sub;
+  const btnsEl = document.getElementById('popupBtns');
+  btnsEl.innerHTML = '';
+  btns.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'popup-btn ' + (b.cls || 'secondary');
+    btn.textContent = b.label;
+    btn.onclick = () => { closePopup(); b.action(); };
+    btnsEl.appendChild(btn);
   });
-  n.onclick = function() { window.focus(); };
+  document.getElementById('popupOverlay').classList.add('active');
 }
-let comingSet = JSON.parse(localStorage.getItem('comingSet') || '[]');
+function closePopup() { document.getElementById('popupOverlay').classList.remove('active'); }
 
 function doLogin() {
   if (document.getElementById('pwInput').value === ADMIN_PW) {
@@ -302,22 +313,21 @@ async function syncSettings() {
       const bF = parseInt(d.values[5] && d.values[5][0]) || 0;
       seats = { tM, tF, bM, bF };
       localStorage.setItem('seats', JSON.stringify(seats));
-      ['tM','tF','bM','bF'].forEach(k => { document.getElementById(k).textContent = seats[k] || 0; });
-      updateSeatUI('t', TABLE_MAX);
-      updateSeatUI('b', BAR_MAX);
-      updateOpStatusUI();
     }
   } catch(e) {}
+  ['tM','tF','bM','bF'].forEach(k => { document.getElementById(k).textContent = seats[k] || 0; });
+  updateSeatUI('t', TABLE_MAX);
+  updateSeatUI('b', BAR_MAX);
+  updateOpStatusUI();
 }
 
 async function initAdmin() {
   await syncSettings();
   loadData();
-  setInterval(async () => {
-    await syncSettings();
-    await loadData();
-  }, 30000);
+  setInterval(async () => { await syncSettings(); await loadData(); }, 30000);
 }
+
+async function refreshAll() { await syncSettings(); await loadData(); }
 
 function updateSeat(id, delta) {
   const prefix = id[0];
@@ -332,13 +342,11 @@ function updateSeat(id, delta) {
   seats[id] = val;
   localStorage.setItem('seats', JSON.stringify(seats));
   updateSeatUI(prefix, max);
-  // 모든 좌석 변경을 구글시트에 저장
   const tTotal = (parseInt(seats.tM)||0) + (parseInt(seats.tF)||0);
   fetch(GAS_URL + '?type=setSeatDetail&tM='+seats.tM+'&tF='+seats.tF+'&bM='+seats.bM+'&bF='+seats.bF);
   if (prefix === 't') {
     const remain = Math.max(TABLE_MAX - tTotal, 0);
-    const newFull2 = tTotal >= TABLE_MAX;
-    isFull = newFull2;
+    isFull = tTotal >= TABLE_MAX;
     updateOpStatusUI();
     fetch(GAS_URL + '?type=setFull&value=' + isFull);
     fetch(GAS_URL + '?type=setSeats&value=' + remain);
@@ -379,27 +387,21 @@ function updateOpStatusUI() {
   }
 }
 
-// 별표 토글 - 별표 있으면 목록 상단으로
 function toggleStar(rawIdx) {
   const i = starred.indexOf(rawIdx);
-  if (i >= 0) starred.splice(i, 1);
-  else starred.push(rawIdx);
+  if (i >= 0) starred.splice(i, 1); else starred.push(rawIdx);
   localStorage.setItem('starred', JSON.stringify(starred));
   renderList();
 }
 
-// 하트 토글
 function toggleHeart(rawIdx) {
   const i = hearted.indexOf(rawIdx);
-  if (i >= 0) hearted.splice(i, 1);
-  else hearted.push(rawIdx);
+  if (i >= 0) hearted.splice(i, 1); else hearted.push(rawIdx);
   localStorage.setItem('hearted', JSON.stringify(hearted));
   renderList();
 }
 
-function callGuest(phone) {
-  window.location.href = 'tel:' + phone.replace(/[^0-9]/g, '');
-}
+function callGuest(phone) { window.location.href = 'tel:' + phone.replace(/[^0-9]/g, ''); }
 
 function sendSMS(rawIdx) {
   const row = rawRows[rawIdx];
@@ -411,26 +413,8 @@ function sendSMS(rawIdx) {
   }
 }
 
-async function confirmO(rawIdx) {
-  // O 버튼 → 오는 중 상태로
-  comingSet.push(rawIdx);
-  localStorage.setItem('comingSet', JSON.stringify(comingSet));
-  renderList();
-}
-
-async function confirmX(rawIdx) {
-  // X 버튼 → 바로 삭제
-  if (!confirm('삭제하시겠습니까?')) return;
-  await deleteGuest(rawIdx);
-}
-
-async function confirmComing(rawIdx) {
-  // 오는 중 다시 누름 → 입장 처리
-  if (!confirm('입장 처리 하겠습니까?')) return;
-  await deleteGuest(rawIdx);
-}
-
-async function deleteGuest(rawIdx) {
+// 구글시트에서 삭제 + 카운트 제외 (화면에서는 안 지움)
+async function removeFromSheet(rawIdx) {
   const row = rawRows[rawIdx];
   if (!row) return;
   try {
@@ -440,13 +424,44 @@ async function deleteGuest(rawIdx) {
       body: JSON.stringify({ type: 'delete', name: row[3], phone: row[6] })
     });
   } catch(e) {}
-  comingSet = comingSet.filter(i => i !== rawIdx);
-  starred = starred.filter(i => i !== rawIdx);
-  hearted = hearted.filter(i => i !== rawIdx);
-  localStorage.setItem('comingSet', JSON.stringify(comingSet));
-  localStorage.setItem('starred', JSON.stringify(starred));
-  localStorage.setItem('hearted', JSON.stringify(hearted));
-  await loadData();
+}
+
+// X 버튼 → 미응답 / 방문X 선택
+function clickX(rawIdx) {
+  showPopup('사유를 선택해주세요', '', [
+    { label: '미응답', cls: 'warning', action: () => setStatus(rawIdx, 'noreply') },
+    { label: '방문 X', cls: 'danger', action: () => setStatus(rawIdx, 'visitx') },
+    { label: '취소', cls: 'secondary', action: () => {} },
+  ]);
+}
+
+// O 버튼 → 오는 중
+function clickO(rawIdx) {
+  setStatus(rawIdx, 'coming');
+}
+
+// 오는 중 누름 → 입장처리/노쇼/취소
+function clickComing(rawIdx) {
+  showPopup('어떻게 처리할까요?', '', [
+    { label: '입장 처리', cls: 'primary', action: () => setStatus(rawIdx, 'done') },
+    { label: '노쇼', cls: 'danger', action: () => setStatus(rawIdx, 'noshow') },
+    { label: '취소', cls: 'secondary', action: () => {} },
+  ]);
+}
+
+async function setStatus(rawIdx, status) {
+  itemStates[rawIdx] = status;
+  saveStates();
+
+  // 구글시트 삭제 + 카운트 제외 (회색처리 상태들)
+  const removeStatuses = ['done', 'noshow', 'noreply', 'visitx'];
+  if (removeStatuses.includes(status)) {
+    await removeFromSheet(rawIdx);
+    // 대기 목록 새로고침 (카운트 반영)
+    await loadData();
+  } else {
+    renderList();
+  }
 }
 
 function getSeatBadge(seat) {
@@ -455,34 +470,42 @@ function getSeatBadge(seat) {
   return '<span class="seat-badge table">테</span>';
 }
 
-function getActionBtns(rawIdx, phone) {
-  const isComing = comingSet.includes(rawIdx);
-  if (isComing) {
-    return `<div class="action-btns">
-      <button class="action-btn" onclick="sendSMS(${rawIdx})">문자</button>
-      <button class="action-btn call" onclick="callGuest('${phone}')">전화</button>
-      <button class="action-btn coming" onclick="confirmComing(${rawIdx})">오는 중</button>
-    </div>`;
-  } else {
-    return `<div class="action-btns">
-      <button class="action-btn" onclick="sendSMS(${rawIdx})">문자</button>
-      <button class="action-btn call" onclick="callGuest('${phone}')">전화</button>
-      <button class="action-btn confirm-o" onclick="confirmO(${rawIdx})">O</button>
-      <button class="action-btn confirm-x" onclick="confirmX(${rawIdx})">X</button>
-    </div>`;
-  }
-}
-
 function getTimeStr(row) {
   const t = row[2]||'';
   if (!t) return '';
   return t.substring(5,10).replace('-','/') + ' ' + t.substring(11,16);
 }
 
+function getActionBtns(rawIdx, row) {
+  const phone = row[6]||'';
+  const state = itemStates[rawIdx] || null;
 
-async function refreshAll() {
-  await syncSettings();
-  await loadData();
+  if (state === 'done') {
+    return `<div class="action-btns"><button class="action-btn done-label">입장완료</button></div>`;
+  }
+  if (state === 'noshow') {
+    return `<div class="action-btns"><button class="action-btn noshow-label">노쇼</button></div>`;
+  }
+  if (state === 'noreply') {
+    return `<div class="action-btns"><button class="action-btn noreply-label">미응답</button></div>`;
+  }
+  if (state === 'visitx') {
+    return `<div class="action-btns"><button class="action-btn visitx-label">방문X</button></div>`;
+  }
+  if (state === 'coming') {
+    return `<div class="action-btns">
+      <button class="action-btn" onclick="sendSMS(${rawIdx})">문자</button>
+      <button class="action-btn call" onclick="callGuest('${phone}')">전화</button>
+      <button class="action-btn coming" onclick="clickComing(${rawIdx})">오는 중</button>
+    </div>`;
+  }
+  // 기본 상태
+  return `<div class="action-btns">
+    <button class="action-btn" onclick="sendSMS(${rawIdx})">문자</button>
+    <button class="action-btn call" onclick="callGuest('${phone}')">전화</button>
+    <button class="action-btn confirm-o" onclick="clickO(${rawIdx})">O</button>
+    <button class="action-btn confirm-x" onclick="clickX(${rawIdx})">X</button>
+  </div>`;
 }
 
 async function loadData() {
@@ -490,36 +513,32 @@ async function loadData() {
     const res = await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(RANGE)+'?key='+API_KEY);
     const data = await res.json();
     if (data.error) return;
-    const newRows = (data.values||[]).slice(1).filter(r => r[3] && r[3].toString().trim() !== '');
-    // 새 등록 감지 → 알림
-    if (lastRowCount >= 0 && newRows.length > lastRowCount) {
-      const newOnes = newRows.slice(lastRowCount);
-      newOnes.forEach(row => sendBrowserNotification(row));
-    }
-    lastRowCount = newRows.length;
-    rawRows = newRows;
-    // 삭제된 행 starred/hearted 정리
+    rawRows = (data.values||[]).slice(1).filter(r => r[3] && r[3].toString().trim() !== '');
+
+    // 삭제된 행 정리
     starred = starred.filter(i => i < rawRows.length);
     hearted = hearted.filter(i => i < rawRows.length);
-    comingSet = comingSet.filter(i => i < rawRows.length);
+    // itemStates는 유지 (회색처리 항목 보존)
     localStorage.setItem('starred', JSON.stringify(starred));
     localStorage.setItem('hearted', JSON.stringify(hearted));
-    localStorage.setItem('comingSet', JSON.stringify(comingSet));
+
     renderList();
     updateStats();
   } catch(e) {}
 }
 
 function updateStats() {
-  document.getElementById('totalCount').textContent = rawRows.length;
-  document.getElementById('totalPeople').textContent = rawRows.reduce((s,r) => s+(parseInt(r[5])||0), 0);
+  // 활성 대기만 카운트 (회색처리 제외)
+  const removedStates = ['done','noshow','noreply','visitx'];
+  const activeRows = rawRows.filter((_, i) => !removedStates.includes(itemStates[i]));
+  document.getElementById('totalCount').textContent = activeRows.length;
+  document.getElementById('totalPeople').textContent = activeRows.reduce((s,r) => s+(parseInt(r[5])||0), 0);
 }
 
 function renderList() {
   const el = document.getElementById('waitingList');
-  if (!rawRows.length) { el.innerHTML = '<div class="waiting-empty">현재 대기 없음</div>'; return; }
 
-  // 별표 있는 항목 먼저, 나머지는 원래 순서
+  // 별표 있는 항목 위로
   const sorted = rawRows.map((row, rawIdx) => ({ row, rawIdx }))
     .sort((a, b) => {
       const aS = starred.includes(a.rawIdx);
@@ -529,18 +548,27 @@ function renderList() {
       return a.rawIdx - b.rawIdx;
     });
 
+  if (!sorted.length) { el.innerHTML = '<div class="waiting-empty">현재 대기 없음</div>'; return; }
+
+  const removedStates = ['done','noshow','noreply','visitx'];
+
   el.innerHTML = sorted.map(({row, rawIdx}, displayIdx) => {
     const isStarred = starred.includes(rawIdx);
     const isHearted = hearted.includes(rawIdx);
+    const state = itemStates[rawIdx] || null;
+    const isGreyed = removedStates.includes(state) || state === 'coming';
     const gender = row[4]||'';
     const gClass = gender==='남성'?'male':'female';
     const seat = row[7]||'테이블석';
-    const heartedClass = isHearted ? 'hearted' : '';
-    const comingClass = comingSet.includes(rawIdx) ? 'coming-state' : '';
 
-    return `<div class="waiting-item ${heartedClass} ${comingClass}">
+    let itemClass = '';
+    if (removedStates.includes(state)) itemClass = 'greyed';
+    else if (state === 'coming') itemClass = 'coming-state';
+    else if (isHearted) itemClass = 'hearted';
+
+    return `<div class="waiting-item ${itemClass}">
       <div class="icon-btns">
-        <button class="star-btn ${isStarred?'active':''}" onclick="toggleStar(${rawIdx})" title="${isStarred?'우선순번 해제':'우선순번 지정'}">★</button>
+        <button class="star-btn ${isStarred?'active':''}" onclick="toggleStar(${rawIdx})">★</button>
         <button class="heart-btn ${isHearted?'active':''}" onclick="toggleHeart(${rawIdx})">♥</button>
       </div>
       <span class="waiting-num">${displayIdx+1}</span>
@@ -549,11 +577,10 @@ function renderList() {
           <span class="waiting-name">${row[3]||'—'}</span>
           <span class="gender-badge ${gClass}">${gender}</span>
           ${getSeatBadge(seat)}
-
         </div>
         <p class="waiting-meta">${row[5]||'—'}명 · ${getTimeStr(row)}</p>
       </div>
-      ${getActionBtns(rawIdx, row[6]||'')}
+      ${getActionBtns(rawIdx, row)}
     </div>`;
   }).join('');
 }

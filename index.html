@@ -572,6 +572,9 @@ function goToMyTurn() {
 document.getElementById('formOverlay').addEventListener('click',function(e){
   if(e.target===this && !document.getElementById('completeOverlay').classList.contains('active')) closeForm();
 });
+document.getElementById('completeOverlay').addEventListener('click',function(e){
+  e.stopPropagation();
+});
 
 const n=getParam('name');
 if(n){

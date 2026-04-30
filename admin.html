@@ -264,11 +264,16 @@ let isFull = false;
 
 // itemStates: { "이름|전화번호": 'coming'|'done'|'noshow'|'noreply'|'visitx' }
 let itemStates = JSON.parse(localStorage.getItem('itemStates2') || '{}');
+// itemRows: { "이름|전화번호": row배열 } - 회색 처리 후에도 데이터 보존
+let itemRows = JSON.parse(localStorage.getItem('itemRows') || '{}');
 
 // 고유 키 생성 (이름+전화번호)
 function getKey(row) { return (row[3]||'') + '|' + (row[6]||''); }
 
-function saveStates() { localStorage.setItem('itemStates2', JSON.stringify(itemStates)); }
+function saveStates() {
+  localStorage.setItem('itemStates2', JSON.stringify(itemStates));
+  localStorage.setItem('itemRows', JSON.stringify(itemRows));
+}
 function saveStarred() { localStorage.setItem('starred', JSON.stringify(starred)); }
 function saveHearted() { localStorage.setItem('hearted', JSON.stringify(hearted)); }
 
@@ -334,6 +339,7 @@ function resetAll() {
   showPopup('영업 종료 / 초기화', '대기 목록 상태가 모두 초기화돼요.', [
     { label: '초기화', cls: 'danger', action: async () => {
       itemStates = {};
+      itemRows = {};
       starred = [];
       hearted = [];
       saveStates(); saveStarred(); saveHearted();
@@ -535,14 +541,19 @@ async function loadData() {
     );
 
     // allItems = 활성(구글시트) + 회색(로컬)
-    allItems = rawRows.map(r => ({ row: r, key: getKey(r) }));
+    // 현재 활성 항목들의 row 데이터 저장 (회색 처리 후에도 유지)
+rawRows.forEach(r => { itemRows[getKey(r)] = r; });
+localStorage.setItem('itemRows', JSON.stringify(itemRows));
+allItems = rawRows.map(r => ({ row: r, key: getKey(r) }));
 
     // 회색 항목은 별도로 저장해두고 같이 표시
     greyKeys.forEach(k => {
       if (!allItems.find(it => it.key === k)) {
-        // 이름|전화번호 복원
+        // 저장된 row 데이터 복원 (없으면 이름|전화번호로 최소 복원)
+        const savedRow = itemRows[k] || null;
         const [name, phone] = k.split('|');
-        allItems.push({ row: ['','','',name,'','',phone,''], key: k, isGhost: true });
+        const row = savedRow || ['','','',name,'','',phone,''];
+        allItems.push({ row, key: k, isGhost: true });
       }
     });
 

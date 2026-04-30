@@ -556,8 +556,10 @@ async function submitForm() {
   const phone='010-'+document.getElementById('fPhone').value.trim();
   const seat=getSeat();
   pendingName = name;
-  closeForm();
+  // 팝업 먼저 띄우고 폼 닫기
   document.getElementById('completeOverlay').classList.add('active');
+  document.getElementById('formOverlay').classList.remove('active');
+  document.body.style.overflow='';
   try {
     await fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({name,gender:selectedGender,people:selectedPeople,phone,seat})});

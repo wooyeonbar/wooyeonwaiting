@@ -125,16 +125,19 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 .card-tag.empty-black { background: #3a3835; color: #aaa; font-size: 11px; }
 .card-tag.empty-red { background: #5a2820; color: #e07060; font-size: 11px; }
 .shuffle-divider { font-size: 10px; color: var(--text3); padding: 0 4px; align-self: center; }
-.table-vis-wrap { display: flex; gap: 16px; margin-top: 4px; }
-.table-vis { flex: 1; min-width: 0; }
-.table-vis-label { font-size: 10px; color: var(--text3); text-align: center; margin-bottom: 5px; letter-spacing: 0.06em; }
-.seat-rows { display: flex; flex-direction: column; gap: 4px; }
-.seat-row { display: flex; gap: 4px; }
-.seat { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
-.seat.man { background: #1e4080; color: #c8d8ff; }
-.seat.woman { background: #8b1a1a; color: #ffd0d0; }
-.seat.empty { background: #2a2a2e; color: #555; }
-.seat-spacer { width: 30px; flex-shrink: 0; }
+.table-vis-wrap { margin-top: 8px; }
+.table-vis { margin-bottom: 8px; }
+.table-vis-label { font-size: 10px; color: var(--text3); margin-bottom: 4px; letter-spacing: 0.06em; }
+.tbl-diagram { display: inline-flex; align-items: center; gap: 4px; }
+.tbl-diagram.right-tbl { flex-direction: row-reverse; }
+.tbl-k-wrap { display: flex; align-items: center; align-self: stretch; }
+.tbl-pairs { display: flex; flex-direction: column; gap: 4px; }
+.tbl-row { display: flex; gap: 4px; }
+.seat { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; flex-shrink: 0; }
+.seat.man { background: #1a1916; color: #fff; }
+.seat.woman { background: #c0503e; color: #fff; }
+.seat.empty-b { background: #3a3835; color: #666; }
+.seat.empty-r { background: #5a2820; color: #a06060; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
 .dot { display: inline-block; animation: blink 1.2s ease-in-out infinite; color: var(--text3); font-size: 22px; line-height: 1; }
 .dot:nth-child(2) { animation-delay: 0.2s; }
@@ -844,33 +847,36 @@ function showShuffle() {
     tagList(emptyBlack, 'empty-black') + tagList(emptyRed, 'empty-red');
 
   // 테이블 배치 시각화
-  const leftTopSeats    = [{c:'A',t:'red'},{c:'2',t:'blue'},{c:'3',t:'red'},{c:'4',t:'blue'},{c:'5',t:'red'},{c:'6',t:'blue'}];
-  const leftBottomSeats = [{c:'K',t:'red'},{c:'A',t:'blue'},{c:'2',t:'red'},{c:'3',t:'blue'},{c:'4',t:'red'},{c:'5',t:'blue'}];
-  const rightTopSeats    = [{c:'6',t:'red'},{c:'7',t:'blue'},{c:'8',t:'red'},{c:'9',t:'blue'},{c:'10',t:'red'},{c:'J',t:'blue'},{c:'Q',t:'red'},{c:'K',t:'blue'}];
-  const rightBottomSeats = [{c:'7',t:'red'},{c:'8',t:'blue'},{c:'9',t:'red'},{c:'10',t:'blue'},{c:'J',t:'red'},{c:'Q',t:'blue'}];
+  const lTopSeats = [{c:'A',t:'red'},{c:'2',t:'blue'},{c:'3',t:'red'},{c:'4',t:'blue'},{c:'5',t:'red'},{c:'6',t:'blue'}];
+  const lBotSeats = [{c:'A',t:'blue'},{c:'2',t:'red'},{c:'3',t:'blue'},{c:'4',t:'red'},{c:'5',t:'blue'}];
+  const rTopSeats = [{c:'6',t:'red'},{c:'7',t:'blue'},{c:'8',t:'red'},{c:'9',t:'blue'},{c:'10',t:'red'},{c:'J',t:'blue'},{c:'Q',t:'red'}];
+  const rBotSeats = [{c:'7',t:'red'},{c:'8',t:'blue'},{c:'9',t:'red'},{c:'10',t:'blue'},{c:'J',t:'red'},{c:'Q',t:'blue'}];
 
-  function seatCls(card, type, data) {
-    if (type === 'blue') {
-      if (data.blue.includes(card)) return 'man';
-      if (data.overBlue.includes(card)) return 'woman';
-    } else {
-      if (data.red.includes(card)) return 'woman';
-      if (data.overRed.includes(card)) return 'man';
-    }
-    return 'empty';
+  function sCls(card, type, data) {
+    if (type === 'blue') return data.blue.includes(card) ? 'man' : data.overBlue.includes(card) ? 'woman' : 'empty-b';
+    return data.red.includes(card) ? 'woman' : data.overRed.includes(card) ? 'man' : 'empty-r';
   }
-  function makeSeatRow(seats, data, spacer) {
-    const sp = spacer ? '<div class="seat-spacer"></div>' : '';
-    return '<div class="seat-row">' + sp + seats.map(s =>
-      `<div class="seat ${seatCls(s.c, s.t, data)}">${s.c}</div>`
-    ).join('') + '</div>';
+  function sRow(seats, data) {
+    return seats.map(s => `<div class="seat ${sCls(s.c,s.t,data)}">${s.c}</div>`).join('');
   }
+  const lKcls = sCls('K','red',L);
+  const rKcls = sCls('K','blue',R);
   document.getElementById('leftTableVis').innerHTML =
-    makeSeatRow(leftTopSeats, L, false) + makeSeatRow(leftBottomSeats, L, false);
-  document.getElementById('rightTableVis').innerHTML =
-    rightCount > 0
-      ? makeSeatRow(rightTopSeats, R, false) + makeSeatRow(rightBottomSeats, R, true)
-      : rightTopSeats.concat(rightBottomSeats).map(s => '').join('');
+    `<div class="tbl-diagram">
+      <div class="tbl-k-wrap"><div class="seat ${lKcls}">K</div></div>
+      <div class="tbl-pairs">
+        <div class="tbl-row">${sRow(lTopSeats,L)}</div>
+        <div class="tbl-row">${sRow(lBotSeats,L)}</div>
+      </div>
+    </div>`;
+  document.getElementById('rightTableVis').innerHTML = rightCount > 0
+    ? `<div class="tbl-diagram right-tbl">
+        <div class="tbl-k-wrap"><div class="seat ${rKcls}">K</div></div>
+        <div class="tbl-pairs">
+          <div class="tbl-row">${sRow(rTopSeats,R)}</div>
+          <div class="tbl-row" style="margin-left:30px">${sRow(rBotSeats,R)}</div>
+        </div>
+      </div>` : '';
   document.getElementById('tableVisGroup').style.display = '';
 
   el.classList.add('active');

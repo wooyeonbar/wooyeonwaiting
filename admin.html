@@ -709,7 +709,19 @@ function showShuffle() {
   if (T <= 12) {
     leftCount = T; rightCount = 0;
   } else {
-    leftCount = Math.min(12, Math.round(T * 12 / 26));
+    // floor/ceil 중 cross-gender pair 합이 더 많은 쪽 선택
+    function calcPairScore(lc) {
+      const rc = T - lc;
+      const lm = Math.min(lc, Math.max(0, Math.round(M * lc / T)));
+      const lw = lc - lm;
+      const rm = Math.max(0, Math.min(rc, M - lm));
+      const rw = rc - rm;
+      return Math.min(lm, lw, 5) + Math.min(rm, rw, 6);
+    }
+    const base = T * 12 / 26;
+    const lc1 = Math.min(12, Math.floor(base));
+    const lc2 = Math.min(12, Math.ceil(base));
+    leftCount = (lc1 === lc2 || calcPairScore(lc1) >= calcPairScore(lc2)) ? lc1 : lc2;
     rightCount = T - leftCount;
   }
 

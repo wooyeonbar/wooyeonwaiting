@@ -761,12 +761,16 @@ function showShuffle() {
   const L = fillSeats(leftPositions, leftMen, leftCount - leftMen);
   const R = fillSeats(rightPositions, rightMen, rightCount - rightMen);
 
-  // 오른쪽 테이블 최적화: Q-K 인접 점수 극대화
-  // 여자가 많아 Q가 overflow 여자(검정)로 배정되면 → 9(남자)와 Q를 swap
-  // → Q(남자)가 K(여자overflow)와 인접, 9(여자overflow)는 8·10(남자)와 인접 → 이성 인접 +3
+  // 오른쪽 테이블 Q-K 인접 최적화 (대칭 적용)
+  // F>M: 9(남자·파랑)↔Q(여자overflow·파랑) swap → Q(남)이 K(여자overflow)와 인접
   if (R.blue.includes('9') && R.overBlue.includes('Q')) {
     R.blue[R.blue.indexOf('9')] = 'Q';
     R.overBlue[R.overBlue.indexOf('Q')] = '9';
+  }
+  // M>F: 9(여자·빨강)↔Q(남자overflow·빨강) swap → Q(여)가 J·K 인접, 9(남자overflow)가 8·10 인접
+  if (R.red.includes('9') && R.overRed.includes('Q')) {
+    R.red[R.red.indexOf('9')] = 'Q';
+    R.overRed[R.overRed.indexOf('Q')] = '9';
   }
 
   // 오름차순 정렬

@@ -108,8 +108,9 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 .bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
 .refresh-btn { font-size: 11px; color: var(--text3); background: none; border: none; cursor: pointer; padding: 6px 12px; }
 .reset-btn { font-size: 11px; color: var(--danger); background: none; border: 1px solid var(--danger); border-radius: 6px; cursor: pointer; padding: 6px 12px; }
-.shuffle-btn { width: 100%; margin-top: 10px; padding: 10px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; font-size: 12px; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; color: var(--text2); letter-spacing: 0.05em; }
-.shuffle-btn:hover { background: var(--border); }
+.shuffle-btn { width: 100%; margin-top: 10px; padding: 10px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; font-size: 12px; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; color: var(--text2); letter-spacing: 0.05em; transition: background 0.15s; }
+.shuffle-btn:hover:not(:disabled) { background: var(--border); }
+.shuffle-btn:disabled { opacity: 0.38; cursor: not-allowed; }
 .shuffle-result { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; margin-top: 8px; display: none; }
 .shuffle-result.active { display: block; }
 .shuffle-group { margin-bottom: 0.9rem; }
@@ -120,8 +121,10 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 .card-tag.black { background: #1a1916; color: #fff; }
 .card-tag.red-card { background: #c0503e; color: #fff; }
 .card-tag.extra-black { background: #555; color: #fff; }
-.card-tag.empty { background: var(--surface2); color: var(--text3); font-size: 11px; }
-.shuffle-divider { font-size: 10px; color: var(--text3); padding: 0 2px; align-self: center; }
+.card-tag.extra-red { background: #a03428; color: #fff; }
+.card-tag.empty-black { background: #3a3835; color: #aaa; font-size: 11px; }
+.card-tag.empty-red { background: #5a2820; color: #e07060; font-size: 11px; }
+.shuffle-divider { font-size: 10px; color: var(--text3); padding: 0 4px; align-self: center; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
 .dot { display: inline-block; animation: blink 1.2s ease-in-out infinite; color: var(--text3); font-size: 22px; line-height: 1; }
 .dot:nth-child(2) { animation-delay: 0.2s; }
@@ -220,20 +223,16 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
         <span class="op-text" id="opText" style="color:var(--text3)">웨이팅 불가</span>
         <span class="seat-remain ok" id="tRemain">남은 자리 26명</span>
       </div>
-      <button class="shuffle-btn" onclick="showShuffle()">🃏 자리 섞기</button>
+      <button class="shuffle-btn" id="shuffleBtn" onclick="showShuffle()" disabled>🃏 자리 섞기</button>
     </div>
     <div class="shuffle-result" id="shuffleResult">
       <div class="shuffle-group">
-        <div class="shuffle-label">남자 — 검정 카드</div>
+        <div class="shuffle-label">남자 — 카드</div>
         <div class="card-tags" id="menCards"></div>
       </div>
       <div class="shuffle-group">
-        <div class="shuffle-label">여자 — 빨강 카드</div>
+        <div class="shuffle-label">여자 — 카드</div>
         <div class="card-tags" id="womenRedCards"></div>
-      </div>
-      <div class="shuffle-group" id="womenBlueGroup" style="display:none">
-        <div class="shuffle-label">여자 — 검정 카드 추가</div>
-        <div class="card-tags" id="womenBlueCards"></div>
       </div>
       <div class="shuffle-group">
         <div class="shuffle-label">빈 자리</div>
@@ -494,6 +493,12 @@ function updateSeatUI(prefix, max) {
   if (remain === 0) { el.textContent = '만석!'; el.className = 'seat-remain full'; }
   else if (remain <= 3) { el.textContent = '남은 자리 '+remain+'명'; el.className = 'seat-remain warn'; }
   else { el.textContent = '남은 자리 '+remain+'명'; el.className = 'seat-remain ok'; }
+  // 자리 섞기 버튼: 13명 이상일 때만 활성화
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  if (shuffleBtn) shuffleBtn.disabled = total < 13;
+  // 인원 바뀌면 결과 닫기
+  const shuffleResult = document.getElementById('shuffleResult');
+  if (shuffleResult) shuffleResult.classList.remove('active');
 }
 
 function updateOpStatusUI() {
@@ -677,11 +682,15 @@ function showShuffle() {
   const T = M + F;
   const el = document.getElementById('shuffleResult');
 
-  if (T === 0) {
-    el.classList.add('active');
-    el.innerHTML = '<p style="font-size:13px;color:var(--text3);text-align:center;padding:0.5rem">현재 매장 인원을 먼저 입력해 주세요</p>';
+  // 토글: 이미 열려 있으면 닫기
+  if (el.classList.contains('active')) {
+    el.classList.remove('active');
     return;
   }
+
+  // 트럼프 카드 오름차순 정렬 함수 (A→2→…→K)
+  const TRUMP_ORDER = {A:1,2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:10,J:11,Q:12,K:13};
+  const sortCards = arr => [...arr].sort((a,b) => TRUMP_ORDER[a] - TRUMP_ORDER[b]);
 
   // 왼쪽 테이블 자리 (중앙 우선)
   const leftPositions = [
@@ -704,74 +713,88 @@ function showShuffle() {
     rightCount = T - leftCount;
   }
 
-  // 자리 채우기 (중앙 우선, 홀수일 때 빨간 먼저)
-  function fillSeats(positions, count) {
-    const blue = [], red = [];
-    let rem = count;
+  // 남자 비율 배분
+  let leftMen = T > 0 ? Math.round(M * leftCount / T) : 0;
+  leftMen = Math.max(0, Math.min(leftMen, leftCount));
+  let rightMen = Math.max(0, M - leftMen);
+  rightMen = Math.min(rightMen, rightCount);
+  leftMen = M - rightMen; // 합이 M이 되도록 보정
+
+  // 자리 채우기 (남/여 수를 받아 2패스 처리)
+  function fillSeats(positions, menCount, womenCount) {
+    const blue = [], red = [], overBlue = [], overRed = [];
+    let menRem = menCount, womenRem = womenCount;
+
+    // 1패스: 기본 배정 (파랑→남, 빨강→여, 중앙 우선)
     for (const p of positions) {
-      if (rem <= 0) break;
+      if (menRem <= 0 && womenRem <= 0) break;
       if (p.t === 'pair') {
-        if (rem >= 2) { blue.push(p.n); red.push(p.n); rem -= 2; }
-        else { red.push(p.n); rem--; }
-      } else if (p.t === 'blue') { blue.push(p.n); rem--; }
-      else { red.push(p.n); rem--; }
+        if (menRem > 0)   { blue.push(p.n); menRem--; }
+        if (womenRem > 0) { red.push(p.n);  womenRem--; }
+      } else if (p.t === 'blue') {
+        if (menRem > 0)   { blue.push(p.n); menRem--; }
+      } else {
+        if (womenRem > 0) { red.push(p.n);  womenRem--; }
+      }
     }
-    return { blue, red };
+
+    // 2패스: overflow (여자→검정, 남자→빨강)
+    if (menRem > 0 || womenRem > 0) {
+      for (const p of positions) {
+        if (menRem <= 0 && womenRem <= 0) break;
+        const bUsed = blue.includes(p.n)  || overBlue.includes(p.n);
+        const rUsed = red.includes(p.n)   || overRed.includes(p.n);
+        if (p.t === 'pair') {
+          if (!bUsed && womenRem > 0) { overBlue.push(p.n); womenRem--; }
+          if (!rUsed && menRem > 0)   { overRed.push(p.n);  menRem--; }
+        } else if (p.t === 'blue') {
+          if (!bUsed && womenRem > 0) { overBlue.push(p.n); womenRem--; }
+        } else {
+          if (!rUsed && menRem > 0)   { overRed.push(p.n);  menRem--; }
+        }
+      }
+    }
+
+    return { blue, red, overBlue, overRed };
   }
 
-  const L = fillSeats(leftPositions, leftCount);
-  const R = fillSeats(rightPositions, rightCount);
+  const L = fillSeats(leftPositions, leftMen, leftCount - leftMen);
+  const R = fillSeats(rightPositions, rightMen, rightCount - rightMen);
 
-  // 남자 배분 (테이블 비율로)
-  let leftMen = T > 0 ? Math.round(M * leftCount / T) : 0;
-  let rightMen = M - leftMen;
-  leftMen  = Math.max(0, Math.min(leftMen,  L.blue.length));
-  rightMen = Math.max(0, Math.min(rightMen, R.blue.length));
-  // 합 보정
-  const diff = M - (leftMen + rightMen);
-  if (diff > 0) rightMen = Math.min(R.blue.length, rightMen + diff);
-  else if (diff < 0) rightMen = Math.max(0, rightMen + diff);
+  // 오름차순 정렬
+  const menBlue  = sortCards([...L.blue,     ...R.blue]);
+  const menRed   = sortCards([...L.overRed,  ...R.overRed]);   // overflow 남자→빨강
+  const womenRed = sortCards([...L.red,      ...R.red]);
+  const womenBlk = sortCards([...L.overBlue, ...R.overBlue]);  // overflow 여자→검정
 
-  const menBlueL  = L.blue.slice(0, leftMen);
-  const menBlueR  = R.blue.slice(0, rightMen);
-  const womenBlueL = L.blue.slice(leftMen);
-  const womenBlueR = R.blue.slice(rightMen);
-
-  // 제외 카드
+  // 빈 자리 계산 (전체 카드 - 사용 카드)
   const allLB = ['A','2','3','4','5','6'], allLR = ['A','2','3','4','5','K'];
   const allRB = ['7','8','9','10','J','Q','K'], allRR = ['6','7','8','9','10','J','Q'];
-  const exLB = allLB.filter(n => !L.blue.includes(n));
-  const exLR = allLR.filter(n => !L.red.includes(n));
-  const exRB = allRB.filter(n => !R.blue.includes(n));
-  const exRR = allRR.filter(n => !R.red.includes(n));
+  const usedLB = [...L.blue, ...L.overBlue];
+  const usedLR = [...L.red,  ...L.overRed];
+  const usedRB = [...R.blue, ...R.overBlue];
+  const usedRR = [...R.red,  ...R.overRed];
+  const emptyBlack = sortCards([...allLB.filter(n=>!usedLB.includes(n)), ...allRB.filter(n=>!usedRB.includes(n))]);
+  const emptyRed   = sortCards([...allLR.filter(n=>!usedLR.includes(n)), ...allRR.filter(n=>!usedRR.includes(n))]);
 
   // 카드 태그 생성
-  function tags(arr, cls) {
-    return arr.map(n => `<span class="card-tag ${cls}">${n}</span>`).join('');
-  }
-  function tagsWithSep(left, right, cls) {
-    let html = tags(left, cls);
-    if (left.length && right.length) html += `<span class="shuffle-divider">|</span>`;
-    html += tags(right, cls);
-    return html;
-  }
+  const tag = (n, cls) => `<span class="card-tag ${cls}">${n}</span>`;
+  const tagList = (arr, cls) => arr.map(n => tag(n, cls)).join('');
+  const sep = `<span class="shuffle-divider">+</span>`;
 
-  document.getElementById('menCards').innerHTML     = tagsWithSep(menBlueL, menBlueR, 'black');
-  document.getElementById('womenRedCards').innerHTML = tagsWithSep(L.red, R.red, 'red-card');
+  // 남자 행: 검정 카드 + overflow 빨강 카드
+  document.getElementById('menCards').innerHTML =
+    tagList(menBlue, 'black') +
+    (menRed.length ? sep + tagList(menRed, 'extra-red') : '');
 
-  const womenBlueAll = [...womenBlueL, ...womenBlueR];
-  const womenBlueGroup = document.getElementById('womenBlueGroup');
-  if (womenBlueAll.length > 0) {
-    document.getElementById('womenBlueCards').innerHTML = tagsWithSep(womenBlueL, womenBlueR, 'extra-black');
-    womenBlueGroup.style.display = 'block';
-  } else {
-    womenBlueGroup.style.display = 'none';
-  }
+  // 여자 행: 빨강 카드 + overflow 검정 카드
+  document.getElementById('womenRedCards').innerHTML =
+    tagList(womenRed, 'red-card') +
+    (womenBlk.length ? sep + tagList(womenBlk, 'extra-black') : '');
 
-  const emptyBlue = [...exLB.map(n=>n+'♠'), ...exRB.map(n=>n+'♠')];
-  const emptyRed  = [...exLR.map(n=>n+'♥'), ...exRR.map(n=>n+'♥')];
-  document.getElementById('emptyCards').innerHTML = [...emptyBlue, ...emptyRed]
-    .map(n => `<span class="card-tag empty">${n}</span>`).join('');
+  // 빈 자리 (색깔만, 기호 없음)
+  document.getElementById('emptyCards').innerHTML =
+    tagList(emptyBlack, 'empty-black') + tagList(emptyRed, 'empty-red');
 
   el.classList.add('active');
 }
@@ -829,6 +852,3 @@ function renderList() {
 </script>
 </body>
 </html>
-  // 왼쪽 테이블 자리 (중앙 우선)
-  const leftPositions = [
-    {n:'3',t:'pair'},{n:'2',t:'pair'},{n:'4',t:'pair'

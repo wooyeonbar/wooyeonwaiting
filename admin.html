@@ -125,6 +125,16 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
 .card-tag.empty-black { background: #3a3835; color: #aaa; font-size: 11px; }
 .card-tag.empty-red { background: #5a2820; color: #e07060; font-size: 11px; }
 .shuffle-divider { font-size: 10px; color: var(--text3); padding: 0 4px; align-self: center; }
+.table-vis-wrap { display: flex; gap: 16px; margin-top: 4px; }
+.table-vis { flex: 1; min-width: 0; }
+.table-vis-label { font-size: 10px; color: var(--text3); text-align: center; margin-bottom: 5px; letter-spacing: 0.06em; }
+.seat-rows { display: flex; flex-direction: column; gap: 4px; }
+.seat-row { display: flex; gap: 4px; }
+.seat { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+.seat.man { background: #1e4080; color: #c8d8ff; }
+.seat.woman { background: #8b1a1a; color: #ffd0d0; }
+.seat.empty { background: #2a2a2e; color: #555; }
+.seat-spacer { width: 30px; flex-shrink: 0; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
 .dot { display: inline-block; animation: blink 1.2s ease-in-out infinite; color: var(--text3); font-size: 22px; line-height: 1; }
 .dot:nth-child(2) { animation-delay: 0.2s; }
@@ -237,6 +247,19 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
       <div class="shuffle-group">
         <div class="shuffle-label">빈 자리</div>
         <div class="card-tags" id="emptyCards"></div>
+      </div>
+      <div class="shuffle-group" id="tableVisGroup" style="display:none">
+        <div class="shuffle-label">테이블 배치</div>
+        <div class="table-vis-wrap">
+          <div class="table-vis">
+            <div class="table-vis-label">왼쪽 테이블</div>
+            <div class="seat-rows" id="leftTableVis"></div>
+          </div>
+          <div class="table-vis">
+            <div class="table-vis-label">오른쪽 테이블</div>
+            <div class="seat-rows" id="rightTableVis"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -819,6 +842,36 @@ function showShuffle() {
   // 빈 자리 (색깔만, 기호 없음)
   document.getElementById('emptyCards').innerHTML =
     tagList(emptyBlack, 'empty-black') + tagList(emptyRed, 'empty-red');
+
+  // 테이블 배치 시각화
+  const leftTopSeats    = [{c:'A',t:'red'},{c:'2',t:'blue'},{c:'3',t:'red'},{c:'4',t:'blue'},{c:'5',t:'red'},{c:'6',t:'blue'}];
+  const leftBottomSeats = [{c:'K',t:'red'},{c:'A',t:'blue'},{c:'2',t:'red'},{c:'3',t:'blue'},{c:'4',t:'red'},{c:'5',t:'blue'}];
+  const rightTopSeats    = [{c:'6',t:'red'},{c:'7',t:'blue'},{c:'8',t:'red'},{c:'9',t:'blue'},{c:'10',t:'red'},{c:'J',t:'blue'},{c:'Q',t:'red'},{c:'K',t:'blue'}];
+  const rightBottomSeats = [{c:'7',t:'red'},{c:'8',t:'blue'},{c:'9',t:'red'},{c:'10',t:'blue'},{c:'J',t:'red'},{c:'Q',t:'blue'}];
+
+  function seatCls(card, type, data) {
+    if (type === 'blue') {
+      if (data.blue.includes(card)) return 'man';
+      if (data.overBlue.includes(card)) return 'woman';
+    } else {
+      if (data.red.includes(card)) return 'woman';
+      if (data.overRed.includes(card)) return 'man';
+    }
+    return 'empty';
+  }
+  function makeSeatRow(seats, data, spacer) {
+    const sp = spacer ? '<div class="seat-spacer"></div>' : '';
+    return '<div class="seat-row">' + sp + seats.map(s =>
+      `<div class="seat ${seatCls(s.c, s.t, data)}">${s.c}</div>`
+    ).join('') + '</div>';
+  }
+  document.getElementById('leftTableVis').innerHTML =
+    makeSeatRow(leftTopSeats, L, false) + makeSeatRow(leftBottomSeats, L, false);
+  document.getElementById('rightTableVis').innerHTML =
+    rightCount > 0
+      ? makeSeatRow(rightTopSeats, R, false) + makeSeatRow(rightBottomSeats, R, true)
+      : rightTopSeats.concat(rightBottomSeats).map(s => '').join('');
+  document.getElementById('tableVisGroup').style.display = '';
 
   el.classList.add('active');
 }

@@ -440,7 +440,7 @@ function resetAll() {
       saveStates(); saveStarred(); saveHearted();
       fetch(GAS_URL + '?type=setSeatDetail&tM=0&tF=0&bM=0&bF=0');
       fetch(GAS_URL + '?type=setSeats&value=26');
-      fetch(GAS_URL + '?type=setFull&value=false');
+      fetch(GAS_URL + '?type=setFull&value=FALSE');
       isFull = false;
       const tMEl = document.getElementById('tM');
       const tFEl = document.getElementById('tF');

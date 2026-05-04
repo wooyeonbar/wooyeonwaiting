@@ -386,6 +386,12 @@ async function syncSettings() {
       seats.tM = parseInt(d.values[2] && d.values[2][0]) || 0;
       seats.tF = parseInt(d.values[3] && d.values[3][0]) || 0;
       localStorage.setItem('seats', JSON.stringify(seats));
+      // GAS에 현재 자리 상태 동기화 (isFull/remain이 틀어진 경우 보정)
+      const tTotal = seats.tM + seats.tF;
+      const remain = Math.max(TABLE_MAX - tTotal, 0);
+      isFull = isFull || tTotal >= TABLE_MAX;
+      fetch(GAS_URL + '?type=setFull&value=' + (isFull ? 'TRUE' : 'FALSE'));
+      fetch(GAS_URL + '?type=setSeats&value=' + remain);
     }
   } catch(e) {}
   const tMEl = document.getElementById('tM');

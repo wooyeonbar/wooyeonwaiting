@@ -292,6 +292,27 @@ body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: va
     </div>
   </div>
 
+  <div class="section" style="margin-top:0.5rem">
+    <p class="section-label" style="font-size:11px;color:var(--text3);margin-bottom:6px">누계 (오늘 포함)</p>
+    <div class="stats-row-3">
+      <div class="stat-mini">
+        <p class="stat-mini-label">누계 방문</p>
+        <p class="stat-mini-val" id="cumVisits">—</p>
+        <p class="stat-mini-unit">명</p>
+      </div>
+      <div class="stat-mini">
+        <p class="stat-mini-label">누계 등록</p>
+        <p class="stat-mini-val" id="cumRegs">—</p>
+        <p class="stat-mini-unit">팀</p>
+      </div>
+      <div class="stat-mini">
+        <p class="stat-mini-label">누계 전환율</p>
+        <p class="stat-mini-val rate" id="cumRate">—</p>
+        <p class="stat-mini-unit">등록/방문</p>
+      </div>
+    </div>
+  </div>
+
   <div class="bottom-row">
     <button class="refresh-btn" onclick="refreshAll()">↻ 새로고침</button>
     <button class="reset-btn" onclick="resetAll()">영업 종료 / 초기화</button>
@@ -321,6 +342,7 @@ function getKey(row) { return (row[3]||'') + '|' + (row[6]||''); }
 function saveStates() {
   localStorage.setItem('itemStates2', JSON.stringify(itemStates));
   localStorage.setItem('itemRows', JSON.stringify(itemRows));
+  fetch(GAS_URL + '?type=setItemStates&value=' + encodeURIComponent(JSON.stringify(itemStates)));
 }
 function saveStarred() { localStorage.setItem('starred', JSON.stringify(starred)); }
 function saveHearted() { localStorage.setItem('hearted', JSON.stringify(hearted)); }
@@ -402,26 +424,36 @@ async function syncSettings() {
   updateOpStatusUI();
 }
 
-// 오늘 방문자/전환율 불러오기
+// 오늘 방문자/전환율 + 누계 불러오기
 async function loadTodayStats() {
   try {
-    const r = await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('설정!A7:A8')+'?key='+API_KEY);
+    // A7:A11 한번에 읽기 (A7=날짜, A8=오늘방문, A9=상태JSON, A10=누계방문, A11=누계등록)
+    const r = await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent('설정!A7:A11')+'?key='+API_KEY);
     const d = await r.json();
     const today = getTodayKST();
-    let visitCount = 0;
-    if (!d.error && d.values && d.values.length >= 2) {
-      const storedDate = d.values[0][0] || '';
+    let visitCount = 0, cumVisits = 0, cumRegs = 0;
+    if (!d.error && d.values) {
+      const storedDate = (d.values[0] && d.values[0][0]) || '';
       if (storedDate === today) {
-        visitCount = parseInt(d.values[1][0]) || 0;
+        visitCount = parseInt(d.values[1] && d.values[1][0]) || 0;
       }
+      cumVisits = parseInt(d.values[3] && d.values[3][0]) || 0;  // A10
+      cumRegs   = parseInt(d.values[4] && d.values[4][0]) || 0;  // A11
     }
     // 오늘 등록 수 (rawRows에서 오늘 날짜 필터)
     const todayRegs = rawRows.filter(r => (r[2]||'').startsWith(today)).length;
     const rate = visitCount > 0 ? Math.round(todayRegs / visitCount * 100) : 0;
 
-    document.getElementById('todayVisits').textContent = visitCount;
+    document.getElementById('todayVisits').textContent = visitCount || '—';
     document.getElementById('todayRegs').textContent = todayRegs;
     document.getElementById('todayRate').textContent = visitCount > 0 ? rate + '%' : '—';
+
+    // 누계 (오늘 포함)
+    const totalVisits = cumVisits + visitCount;
+    const cumRate = totalVisits > 0 ? Math.round(cumRegs / totalVisits * 100) : 0;
+    document.getElementById('cumVisits').textContent = totalVisits;
+    document.getElementById('cumRegs').textContent = cumRegs;
+    document.getElementById('cumRate').textContent = totalVisits > 0 ? cumRate + '%' : '—';
   } catch(e) {}
 }
 

@@ -588,12 +588,13 @@ document.getElementById('completeOverlay').addEventListener('click',function(e){
   e.stopPropagation();
 });
 
-// 방문자 카운트 (직원 쿠키 없을 때만)
+// 방문자 카운트 (직원 쿠키 없을 때만, 세션당 1회)
 function getCookie(name) {
   const v = document.cookie.split('; ').find(r => r.startsWith(name + '='));
   return v ? v.split('=')[1] : null;
 }
-if (!getCookie('wooyeon_staff')) {
+if (!getCookie('wooyeon_staff') && !sessionStorage.getItem('wv')) {
+  sessionStorage.setItem('wv', '1');
   fetch(GAS_URL + '?type=trackVisit');
 }
 

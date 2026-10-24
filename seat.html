@@ -5,7 +5,10 @@
 <script>
 (function(){
   var n = new URLSearchParams(location.search).get('n') || '';
-  location.replace('https://wooyeon-seat.vercel.app/seat/' + encodeURIComponent(n));
+  // 자리 QR → 브릿지 페이지(주문·리뷰·오픈채팅). 번호가 없으면 예전처럼 좌석 페이지로.
+  location.replace(n
+    ? 'https://wooyeon-app.vercel.app/order/' + encodeURIComponent(n)
+    : 'https://wooyeon-seat.vercel.app/');
 })();
 </script>
 </body>
